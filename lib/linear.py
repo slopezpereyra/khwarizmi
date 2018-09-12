@@ -6,28 +6,30 @@ class Linear (equations.Equation):
 
         super().__init__(equation)
         self.equation = equation.replace(" ", "")
-        self.return_all_incognitos(self.equation)
+        self.get_all_incognitos()
         self.equal_index = self.equation.index("=")
 
         self.indexed_incognitos = {self.incognitos[0]: self.equation.index(self.incognitos[0]),
                                    self.incognitos[1]: self.equation.index(self.incognitos[1])}
 
         self.form = self.get_equation_form()
-        self.slope = self.get_slope(self.indexed_incognitos["x"])
+        self.slope = self.get_slope()
         self.y_intercept = self.get_y_intercept(self.equation)
 
-    def return_all_incognitos (self, expression):
+    def get_all_incognitos (self):
+        """ """
 
         index = 0
-
-        for symbol in expression:
+        for symbol in self.equation:
 
             if symbol.isalpha() and symbol not in self.incognitos:
                 self.incognitos.append(symbol)
 
 
 
-    def get_slope (self, x_index):
+    def get_slope (self):
+
+        x_index = self.indexed_incognitos.get("x")
 
         if self.equation[x_index - 1].isdigit() is False:
             return 1
@@ -96,3 +98,4 @@ print(LINEAR.form)
 print(LINEAR.points(10))
 print(LINEAR.get_point(10))
 print(LINEAR.slope)
+
