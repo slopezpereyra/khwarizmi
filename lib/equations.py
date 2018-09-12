@@ -208,3 +208,4 @@ class Equation :
 EQUATION = Equation("25x - 15 = 8")
 print(EQUATION.incognito_side)
 print(EQUATION.sort_equation())
+
