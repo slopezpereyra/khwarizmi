@@ -112,12 +112,15 @@ class Linear (equations.Equation):
         equation = self.equation
 
         y_index = self.indexed_incognitos["y"]
+
         y_point = self.get_full_number(
             equation[y_index + 2], y_index + 2, equation)
 
         x_index = self.indexed_incognitos["x"]
+
         slope = self.get_full_number(
             equation[self.equal_index + 1], self.equal_index + 1, equation)
+
         x_point = self.get_full_number(
             equation[x_index + 2], x_index + 2, equation)
 
@@ -180,6 +183,7 @@ class Linear (equations.Equation):
         value : the value to replace the variable by.
         (optional) show : print the sorted equation."""
 
+        value = str(value)
         self.sort_linear_equation(variable)
 
         if show is True:
@@ -206,5 +210,14 @@ class Linear (equations.Equation):
         return eval(self.sol_side.replace(variable, value))
 
 
-LINEAR = Linear("y = 55x - 10")
+LINEAR = Linear("y = 5x - 3")
+LINEAR2 = Linear("y - 9 = 5 (x + 3)")
+
+
+print(LINEAR.form)
+print(LINEAR2.form)
+print(LINEAR.solve_for("x", 3, True))
+print("\n---\n")
+print(LINEAR2.solve_for("y", 1.03486, True))
 print(LINEAR.solve_for("x", "5"))
+print(LINEAR2.solve_for("x", "5"))

@@ -1,6 +1,10 @@
 """Defines an equation class and its functions."""
 
+import ast
+from exceptions import NoEqualityError, NoVariableError
+
 operators = ["-", "+", "/", "*"]
+excused_symbols = ["/", "."]
 
 
 class Equation:
@@ -61,7 +65,7 @@ class Equation:
 
             index += 1
 
-        print("There's no incognito to be cleared on this equation!")
+        raise NoVariableError(self.equation)
 
     def return_inc_multiplier(self):
         """Returns the incognito multiplier; i.e.  the number that multiplies the
@@ -92,7 +96,7 @@ class Equation:
             self.sol_side = self.equation[equal_sign + 1:]
 
         except ValueError:
-            print("There isn't an equality defined on the passed equation.")
+            raise NoEqualityError(self.equation)
 
     def get_operator(self, number_pos, full_number):
         """Returns the operator to be used on a specific number to clear it
@@ -142,7 +146,8 @@ class Equation:
         Keyword Arguments:
 
         number -- first number to which append following numbers
-        index -- index of the number being initially parsed, which is number"""
+        index -- index of the number being initially parsed, which is number
+        side -- side of the equation you are parsing (it can be the full equation)"""
 
         parser = 1
         if len(side) > index + parser - 1:
@@ -150,7 +155,7 @@ class Equation:
             if self.equation[index + 1] == "=":
                 return number
 
-            while side[index + parser].isdigit():
+            while side[index + parser].isdigit() or side[index + parser] in excused_symbols:
                 number += side[index + parser]
 
                 if index + parser + 1 < len(side):
@@ -223,4 +228,4 @@ class Equation:
         return eval(self.sol_side)
 
 
-EQUATION = Equation("25x - 15 = 8")
+EQUATION = Equation("234x - 45 = 33.6")
