@@ -11,7 +11,7 @@ It works with classes because algebraic properties are more similar to attribute
     
 Cool, uh?
 
-# Cool things you can do with this library
+# What use can I get from this library?
 
 ## Standard equations
 
