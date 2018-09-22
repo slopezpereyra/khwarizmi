@@ -28,20 +28,21 @@ class Quadratic(equations.Equation):
 
         elements are a, first x, b, second x and c."""
 
-        symbols = {"a": 1, "x_1": 0, "x_2": 0, "b": 1, "c": 1}
+        symbols = {"a": 1, "b": 1, "c": 1}
         equation = self.equation
 
         if equation[0].isdigit():
             a = self.get_full_number(equation[0], 0, equation)
             symbols["a"] = float(a)
 
+        # Returns the first symbol after the first plus sign.
         b_index = equation.find("+") + 1
 
         if equation[b_index].isdigit():
             b = self.get_full_number(equation[b_index], b_index, equation)
             symbols["b"] = float(b)
 
-        # Looks for the second plus sign and adds 1
+        # Returns the first symbol after the second plus sign.
         c_index = equation.find("+", b_index + 1) + 1
 
         if equation[c_index].isdigit():

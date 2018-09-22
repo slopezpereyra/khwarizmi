@@ -51,3 +51,37 @@ class NegativeSquareError(_EquationError):
                         " and can't be solved.")
 
         return error_string
+
+
+class ConversionError(_EquationError):
+
+    def __init__(self):
+        _EquationError.__init__(self)
+        pass
+
+
+class InvalidFormError(ConversionError):
+    def __init__(self, form, forms):
+        _EquationError.__init__(self)
+        self.form = form
+        self.forms = forms
+
+    def __str__(self):
+        error_string = ("The given parameter '" + self.form + "' is not valid."
+                        " Valid parameters are: " + self.forms[0] + ", "
+                        + self.forms[1] + ", " + self.forms[2])
+
+        return error_string
+
+
+class RedundantConversionError(ConversionError):
+
+    def __init__(self, form):
+        super().__init__()
+        self.form = form
+
+    def __str__(self):
+        error_string = "Converting {} equation into {} Form is redundant.".format(
+            self.form, self.form)
+
+        return error_string
