@@ -378,9 +378,8 @@ class PointSlope (Linear):
             return Standard(rewritten)
 
 
-POINT = PointSlope('y - 0 = -2.5(x - 2)')
-print(POINT.solve_for("y", 1))
-SLOPE = POINT.express_as('Slope-Intercept')
-print(SLOPE.solve_for("y", 1))
-STAND = POINT.express_as('Standard')
-print(STAND.solve_for("y", 1))
+a = SlopeIntercept("y = 5x - 3")
+b = PointSlope("y - 9 = 5 (x + 3)")
+c = Standard("2x + 5y = 9")
+a_point_slope = a.express_as("Point-Slope")
+print(a_point_slope)

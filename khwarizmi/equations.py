@@ -238,4 +238,4 @@ class Equation:
 
 
 EQUATION = Equation("234x - 45 = 33.6")
-print(EQUATION.sort_equation())
+print(EQUATION.inc_mult_index)

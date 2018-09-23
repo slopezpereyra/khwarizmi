@@ -32,21 +32,21 @@ class Quadratic(equations.Equation):
         equation = self.equation
 
         if equation[0].isdigit():
-            a = self.get_full_number(equation[0], 0, equation)
+            a = self.get_number(equation[0], 0, equation)
             symbols["a"] = float(a)
 
         # Returns the first symbol after the first plus sign.
         b_index = equation.find("+") + 1
 
         if equation[b_index].isdigit():
-            b = self.get_full_number(equation[b_index], b_index, equation)
+            b = self.get_number(equation[b_index], b_index, equation)
             symbols["b"] = float(b)
 
         # Returns the first symbol after the second plus sign.
         c_index = equation.find("+", b_index + 1) + 1
 
         if equation[c_index].isdigit():
-            c = self.get_full_number(equation[c_index], c_index, equation)
+            c = self.get_number(equation[c_index], c_index, equation)
             symbols["c"] = float(c)
 
         return symbols
@@ -67,12 +67,12 @@ class Quadratic(equations.Equation):
             if str_key[1:] == ".0":
                 s[key] = int(s.get(key))
 
-        string = ("(-" + str(s.get("b")) + psms + sqr + str(s.get("b")) + roof +
-                  "*" + roof + "*" + roof + "2" + roof + "-" + roof + "4" + roof
-                  + "*" + roof + str(s.get("a")) + roof +
-                  "*" + roof + str(s.get("c")) + roof + ")/2*" + str(s.get("a")))
+        formulated = ("(-" + str(s.get("b")) + psms + sqr + str(s.get("b")) + roof +
+                      "*" + roof + "*" + roof + "2" + roof + "-" + roof + "4" + roof
+                      + "*" + roof + str(s.get("a")) + roof +
+                      "*" + roof + str(s.get("c")) + roof + ")/2*" + str(s.get("a")))
 
-        return string
+        return formulated
 
     def get_solutions(self):
 
@@ -94,5 +94,10 @@ class Quadratic(equations.Equation):
         self.plus_solution = plus_solution / denominator
         self.minus_solution = minus_solution / denominator
 
+    def solve(self):
+
+        self.get_solutions()
+
 
 QUA = Quadratic("5x**2 + 6x**2 + 1 = 0")
+print(QUA.plus_solution, QUA.minus_solution)
