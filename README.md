@@ -1,4 +1,5 @@
-# khwarizmi-project
+# khwarizmi
+
 A simple library for quickly and efficiently solving basic algebraic expressions.
 
 # Quick intro
