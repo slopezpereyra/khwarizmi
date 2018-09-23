@@ -73,8 +73,10 @@ Linear equations are currently the more richly supported. Let's see class by cla
     b = PointSlope("y - 9 = 5 (x + 3)")
     c = Standard("2x + 5y = 9")
 
-Now lets work some magic with them. For example, lets see what is the form of this linear equations. The statement
+Now lets work some magic with them. For example, lets see what is the form of this linear equations.
 
+    # Attributes
+    
     >>>print("FORM OF A: ", a.form)
     FORM OF A: Slope-Intercept Form
     >>>print("FORM OF B: ", b.form)
