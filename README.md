@@ -1,53 +1,68 @@
 # khwarizmi-project
 A simple library for quickly and efficiently solving basic algebraic expressions.
 
-# How? 
+# Quick intro
 
-This library works in a similar way an interpreter does. Its singularity is that what it interprets is a special kind of language: **algebra**. 
+This library works in a similar way an interpreter does. Its singularity is that what it interprets is a special kind of language: **algebra**. It works with classes because algebraic properties are more similar to attributes of a thing than to variables or mere information. 
 
-It works with classes because algebraic properties are more similar to attributes of a thing than to variables or mere information. To create an algebraic expression, you must only create an instance of the equation type that you wish (for example, a linear equation) and pass your equation (string) as an argument. For example:
+# How?
+
+## Creating equations
+
+To create an algebraic expression, you must only create an instance of the equation type that you wish (for example, a linear equation) and pass your equation (string) as an argument. For example:
 
     my_equation = Linear("y = 2x + 5")
+ 
+ Current equations types supported are:
+ 
+ * Equation : regular equation with a single variable, such as **2x+5 = 9**
+ * Linear : a linear equation of any form.
+ * SlopeIntercept : a linear equation under the Slope-Intercept form.
+ * PointSlope : a linear equation under the Point-Slope form.
+ * Standard : a linear equation under the Standard Form.
+ * Quadratic : an equation of quadratic form (currently only supports those that are equal to 0).
+ 
+ It is best to use specific forms of equations when working with linear equations and avoid using the **Linear** general class for the sake of specificity. This way,
+ 
+     SlopeIntercept("y = 2x + 5") 
+ 
+ is prefered over
+ 
+    Linear("y = 2x + 5")
     
-Cool, uh?
+though both will work just fine.
 
-# What use can I get from this library?
+# Useful methods
 
-## Standard equations
+## 'Regular' equations
 
-Let's see some simple things you can do with the standard type of equation. This is any equation that is not linear or cuadratic. For example,
+After the instantiation of an equation of type **Equation**, we can access many attributes that will be defined on intialization. Provided the equation:
 
     my_equation = Equation("234x - 45 = 33.6")
     
-Let's say we only want to access one side of the equation; for example, the one the incognito (x) is in.
+We can say:
 
-    print(my_equation.inc_side) # side of the incognito
-    print(my_equation.sol_side) # side of the solution
-    
-This would print
+    # Attributes
 
+    >>>print(my_equation.inc_side) # side of the equation the incognito is in.
     234x-5
+    >>>print(my_equation.sol_side) # side of equation the solution to the incognito is in.
     33.6
+    >>>print(my_equation.incognito) # the incognito of this equation
+    x
+    >>>print(my_equation.incognito_index) # position of the incognito on the equation
+    3
+    >>>print(my_equation.inc_multiplier) # the incognito multiplier; i.e. the number that multiplies the incognito.
+    234
+    >>> print(my_equation.inc_mult_index) # index of the incognito multiplier. If it has more than one digit, index of the first.
+    0
+
+    # Methods
     
-with the spaces removed for convenience.
-
-Let's do some more interesting things now.
-
-    print(my_equation.sort_equation())
-    
-This would print your equation sorted with the incognito cleared and all the proper operations on the solution side. Like this:
-
+    >>>print(my_equation.sort_equation()) # This method returns as a string the equation sorted and ready to be solved.
     x = (33.6+45)/234
-    
-Finally, let's see what the result of this equation is.
-
-    print(my_equation.solve())
-   
-This would return the value of x:
-
+    >>>print(my_equation.solve()) # Returns the solution of the equation; in this case, the value of x.
     0.335897435897
-    
-Cool!
 
 ## Linear equations
 
