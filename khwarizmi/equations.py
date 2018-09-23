@@ -62,22 +62,27 @@ class Equation:
 
         raise NoVariableError(self.equation)
 
-    def return_inc_multiplier(self):
+    def return_inc_multiplier(self, inc_index=None, side=None):
         """Returns the incognito multiplier; i.e.  the number that multiplies the
         variable (if any)."""
 
         number = ""
         parser = 1
 
-        index = self.incognito_index
+        index = self.incognito_index if inc_index is None else inc_index
+        inc_side = self.inc_side if side is None else side
 
-        while self.inc_side[index - parser].isdigit() and parser <= index:
-            number = self.inc_side[self.incognito_index - parser] + number
-            parser += 1
+        # While there is a previous character and this character is a digit
+        try:
+            while parser <= index and (inc_side[index - parser].isdigit() or inc_side[index - parser] in excused_symbols):
+                number = self.inc_side[self.incognito_index - parser] + number
+                parser += 1
 
-        self.mult_length = len(number)
+            self.mult_length = len(number)
+            return number
 
-        return number
+        except IndexError:
+            return number
 
     def get_sides(self):
         """Assigns to the inc_side and the sol_side attributes sliced
@@ -134,7 +139,7 @@ class Equation:
             self.sol_side = "(" + self.sol_side.replace(
                 high_operation, "") + ")" + high_operation
 
-    def get_full_number(self, number, index, side=None):
+    def get_number(self, number, index, side=None):
         """Get's all the numbers that form a full number and returns the full
         number.
 
@@ -181,7 +186,7 @@ class Equation:
 
                     # Get the symbol (the full number) and its index.
 
-                    symbol = self.get_full_number(symbol, index, self.inc_side)
+                    symbol = self.get_number(symbol, index, self.inc_side)
                     previous_symbol = self.inc_side[index - 1]
                     operator = self.get_operator(index, symbol)
 
