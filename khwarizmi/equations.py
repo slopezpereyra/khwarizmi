@@ -1,6 +1,5 @@
 """Defines an equation class and its functions."""
 
-import ast
 from exceptions import NoEqualityError, NoVariableError
 
 operators = ["-", "+", "/", "*"]
@@ -26,17 +25,13 @@ class Equation:
     """
 
     def __init__(self, equation):
-        # equation
         self.equation = equation.replace(" ", "")
-        # sides of the equation
         self.sol_side = ""
         self.inc_side = ""
         self.get_sides()
-        # incognito
         self.incognitos = []
         self.incognito = self.return_incognito()
         self.incognito_index = self.equation.index(self.incognito)
-        # incognito multiplier
         self.mult_length = 0
         self.inc_multiplier = self.return_inc_multiplier()
         self.inc_mult_index = self.incognito_index - self.mult_length
@@ -67,22 +62,27 @@ class Equation:
 
         raise NoVariableError(self.equation)
 
-    def return_inc_multiplier(self):
+    def return_inc_multiplier(self, inc_index=None, side=None):
         """Returns the incognito multiplier; i.e.  the number that multiplies the
         variable (if any)."""
 
         number = ""
         parser = 1
 
-        index = self.incognito_index
+        index = self.incognito_index if inc_index is None else inc_index
+        inc_side = self.inc_side if side is None else side
 
-        while self.inc_side[index - parser].isdigit() and parser <= index:
-            number = self.inc_side[self.incognito_index - parser] + number
-            parser += 1
+        # While there is a previous character and this character is a digit
+        try:
+            while parser <= index and (inc_side[index - parser].isdigit() or inc_side[index - parser] in excused_symbols):
+                number = self.inc_side[self.incognito_index - parser] + number
+                parser += 1
 
-        self.mult_length = len(number)
+            self.mult_length = len(number)
+            return number
 
-        return number
+        except IndexError:
+            return number
 
     def get_sides(self):
         """Assigns to the inc_side and the sol_side attributes sliced
@@ -139,7 +139,7 @@ class Equation:
             self.sol_side = "(" + self.sol_side.replace(
                 high_operation, "") + ")" + high_operation
 
-    def get_full_number(self, number, index, side):
+    def get_number(self, number, index, side=None):
         """Get's all the numbers that form a full number and returns the full
         number.
 
@@ -147,12 +147,15 @@ class Equation:
 
         number -- first number to which append following numbers
         index -- index of the number being initially parsed, which is number
-        side -- side of the equation you are parsing (it can be the full equation)"""
+        side -- side of the equation to parse (by default it parses the whole
+        equation)"""
+
+        side = side if side is not None else self.equation
 
         parser = 1
-        if len(side) > index + parser - 1:
 
-            if self.equation[index + 1] == "=":
+        if len(side) > index + parser:
+            if side[index + 1] == "=":
                 return number
 
             while side[index + parser].isdigit() or side[index + parser] in excused_symbols:
@@ -167,7 +170,7 @@ class Equation:
 
         return number
 
-    def sort_equation(self):
+    def sort_equation(self, get_unknown_side=False):
         """Sorts the equation, which is a very highschool, wrongly phrased
         way of saying that clears the incognito side by substracting all
         positive numbers, adding all negative numbers, dividing all multipliers
@@ -182,9 +185,11 @@ class Equation:
                 if symbol.isdigit():
 
                     # Get the symbol (the full number) and its index.
-                    symbol = self.get_full_number(symbol, index, self.inc_side)
+
+                    symbol = self.get_number(symbol, index, self.inc_side)
                     previous_symbol = self.inc_side[index - 1]
                     operator = self.get_operator(index, symbol)
+
                     # Pass the number from the incognito side of the equation to
                     # the solution side, with the proper operator...
 
@@ -210,6 +215,10 @@ class Equation:
         # E.g., 25x-10 = 5--> x = (5+10)/25
 
         self.format_parenthesis()
+
+        if get_unknown_side is True:
+            return self.sol_side
+
         return self.inc_side + " = " + self.sol_side
 
     def solve(self, show=False):
@@ -229,3 +238,4 @@ class Equation:
 
 
 EQUATION = Equation("234x - 45 = 33.6")
+print(EQUATION.inc_mult_index)
