@@ -1,12 +1,12 @@
 """Defines an equation class and its functions."""
 
-from exceptions import NoEqualityError, NoVariableError
+from custom_exceptions import NoEqualityError, NoVariableError
 
 operators = ["-", "+", "/", "*"]
 excused_symbols = ["/", "."]
 
 
-class Equation:
+class Equation (object):
 
     """Base class for all specific equation types.
 

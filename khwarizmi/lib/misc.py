@@ -1,18 +1,15 @@
 """Useful and simple math methods."""
 
 
-def num(a):
-    """Returns a number representation of string a as a float
-    if a represents a float; otherwise, as an int.
+def num(value):
+    """Returns a float or an int representation of value
+    after defining which should be the case.
 
     Keyword arguments:
 
-    a : string representation of a float or int."""
+    a : string representation of a value or numerical value."""
 
-    try:
-        return int(a)
-    except ValueError:
-        return float(a)
+    return int(value) if str(value).endswith(".0") else float(value)
 
 
 def cond_assign(condition, if_true, if_false):

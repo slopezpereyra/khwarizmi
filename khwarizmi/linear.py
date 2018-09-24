@@ -1,15 +1,18 @@
-from exceptions import (InvalidFormError, LinearSolutionError,
-                        RedundantConversionError)
+"""Linear class and specific linear types defined with its methods and attributes."""
 
 import equations
+import matplotlib.pyplot as plt
+from custom_exceptions import (InvalidFormError, LinearSolutionError,
+                               RedundantConversionError)
 from equations import operators
 from lib.misc import cond_assign, num
 
 
 class Linear (equations.Equation):
+    """Base class for all linear equations."""
 
     def __init__(self, equation):
-        super().__init__(equation)
+        equations.Equation.__init__(self, equation)
         self.get_all_incognitos()
         self.equal_index = self.equation.index("=")
         self.indexed_incognitos = {self.incognitos[0]:
@@ -32,11 +35,14 @@ class Linear (equations.Equation):
                 self.incognitos.append(symbol)
 
     def return_multipliers(self):
+        """Returns this equation incognito multipliers."""
 
         if self.form == "Slope-Intercept Form":
             return SlopeIntercept(self.equation).return_multipliers()
         elif self.form == "Standard Form":
             return Standard(self.equation).return_multipliers()
+        elif self.form == "Point-Slope Form":
+            return PointSlope(self.equation).return_multipliers()
 
     def get_slope(self):
         """Returns the slope of this linear equation."""
@@ -63,14 +69,12 @@ class Linear (equations.Equation):
 
         solutions = []
         for i in range(a, b + 1):
-
             equation = self.sol_side
             if self.equation[self.indexed_incognitos["x"] - 1] == "(":
                 equation = equation.replace("(x", "*(" + str(i))
             else:
                 equation = equation.replace("x", "*" + str(i))
             solutions.append(tuple((i, self.solve_for("x", i))))
-
         return solutions
 
     def get_point(self, x_value):
@@ -86,10 +90,31 @@ class Linear (equations.Equation):
 
         return(tuple((x_value, self.solve_for("x", x_value))))
 
+    def graph(self, points, y_label="", x_label=""):
+        """Graphs the line formed by points.
+
+        Keyword arguments:
+
+        points : the points that define the line.
+        y_label : label to describe the y axis (optional)
+        x_label : label to describe the x axis (optionl)"""
+
+        x, y = [], []
+
+        x.extend((points[0][0], points[-1][0]))
+        y.extend((points[0][1], points[-1][1]))
+
+        plt.plot(x, y)
+        plt.ylabel(y_label)
+        plt.xlabel(x_label)
+
+        plt.show()
+
     def solve(self):
         raise LinearSolutionError()
 
     def sort(self, for_variable):
+        """Sorts this equation depending on its type."""
 
         if self.form == "Point-Slope Form":
 
@@ -103,6 +128,7 @@ class Linear (equations.Equation):
             return std.sort(for_variable)
 
     def show_sorted(self, variable, value, sol_side):
+        """Shows the side pass as parameter sorted for the equation variable."""
 
         if variable is self.incognitos[0]:
             inc = self.incognitos[1]
@@ -132,19 +158,21 @@ class Linear (equations.Equation):
         if show is True:
             self.show_sorted(variable, value, sol_side)
 
-        return eval(sol_side.replace(variable, value))
+        return num(eval(sol_side.replace(variable, value)))
 
 
 class SlopeIntercept(Linear):
+    """Class for linear equations of Slope-Intercept form."""
 
     def __init__(self, equation):
         self.equation = equation
-        super().__init__(equation)
+        Linear.__init__(self, equation)
 
     def __str__(self):
         return self.equation
 
     def return_multipliers(self):
+        """Returns this equation incognito multipliers."""
 
         index, eqtn = self.equal_index + 1, self.equation
         x_mult = cond_assign(
@@ -156,7 +184,11 @@ class SlopeIntercept(Linear):
 
     def sort(self, for_variable):
         """Sorts a Slope-Intercept Form linear equation
-        to be solved for a given variable."""
+        to be solved for a given variable.
+
+        Keyword arguments:
+
+        variable : the variable this equation will be sorted to solve for."""
 
         eqtn = self.equation
         sol_side = self.sol_side
@@ -190,6 +222,12 @@ class SlopeIntercept(Linear):
         return sol_side
 
     def express_as(self, form):
+        """Returns an instance of this equation of the class that corresponds
+        to the linear equation form passed as argument.
+
+        Keyword arguments:
+
+        form : the form the equation will be expressed in."""
 
         eqtn, slope, mults = self.equation, str(self.slope), self.multipliers
         forms = ["Slope-Intercept", "Point-Slope", "Standard"]
@@ -221,13 +259,16 @@ class SlopeIntercept(Linear):
 
 
 class Standard (Linear):
+    """Class for linear equations of Standard Form."""
+
     def __init__(self, equation):
-        super().__init__(equation)
+        Linear.__init__(self, equation)
 
     def __str__(self):
         return self.equation
 
     def return_multipliers(self):
+        """Returns this equation incognito multipliers."""
 
         eqtn, index = self.equation, self.equation.find("x") + 2
 
@@ -239,6 +280,12 @@ class Standard (Linear):
         return {"x": x_mult, "y": y_mult}
 
     def sort(self, for_variable):
+        """Sorts a Standard Form linear equation
+        to be solved for a given variable.
+
+        Keyword arguments:
+
+        variable : the variable this equation will be sorted to solve for."""
 
         eqtn = self.equation
         sol_side = self.sol_side
@@ -260,12 +307,12 @@ class Standard (Linear):
         return sol_side
 
     def express_as(self, form):
-        """Returns an equivalent expression of the equation in the form
-        passed as parameter.
+        """Returns an instance of this equation of the class that corresponds
+        to the linear equation form passed as argument.
 
         Keyword arguments:
 
-        (str) form: the form into which convert this equation."""
+        form : the form the equation will be expressed in."""
 
         eqtn, slope = self.equation, str(self.slope)
         forms = ["Slope-Intercept", "Point-Slope", "Standard"]
@@ -293,13 +340,16 @@ class Standard (Linear):
 
 
 class PointSlope (Linear):
+    """Class for all linear equations of Point-Slope form."""
+
     def __init__(self, equation):
-        super().__init__(equation)
+        Linear.__init__(self, equation)
 
     def __str__(self):
         return self.equation
 
     def return_multipliers(self):
+        """Returns this equation incognito multipliers."""
 
         eqtn, index = self.equation, self.equal_index + 1
 
@@ -316,8 +366,12 @@ class PointSlope (Linear):
         return {"x": x_mult, "y": y_mult}
 
     def sort(self, for_variable):
-        """Sorts a Point-Slope Formed linear equation
-        to be solved for a given variable."""
+        """Sorts a Point-Slope Form linear equation
+        to be solved for a given variable.
+
+        Keyword arguments:
+
+        variable : the variable this equation will be sorted to solve for."""
 
         eqtn, y_index = self.equation, self.indexed_incognitos["y"]
         sol_side = self.sol_side
@@ -345,11 +399,12 @@ class PointSlope (Linear):
             return sol_side
 
     def express_as(self, form):
-        """Express this equation in the form passed as an argument.
+        """Returns an instance of this equation of the class that corresponds
+        to the linear equation form passed as argument.
 
         Keyword arguments:
 
-        form : form on which to express the equation."""
+        form : the form the equation will be expressed in."""
 
         eqtn, slope = self.equation, str(self.slope)
         forms = ["Slope-Intercept", "Point-Slope", "Standard"]
@@ -378,8 +433,6 @@ class PointSlope (Linear):
             return Standard(rewritten)
 
 
-a = SlopeIntercept("y = 5x - 3")
-b = PointSlope("y - 9 = 5 (x + 3)")
-c = Standard("2x + 5y = 9")
-a_point_slope = a.express_as("Point-Slope")
-print(a_point_slope)
+SLOPE = SlopeIntercept("y = 2.5x + 5")
+
+SLOPE.graph(SLOPE.points(-2, 6), "Money", "Time")
