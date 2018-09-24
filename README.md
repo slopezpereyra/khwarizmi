@@ -6,6 +6,10 @@ A simple library for quickly and efficiently solving basic algebraic expressions
 
 This library works in a similar way an interpreter does. Its singularity is that what it interprets is a special kind of language: **algebra**. It works with classes because algebraic properties are more similar to attributes of a thing than to variables or mere information. 
 
+# Requirements
+
+The only requirement for using the library are having **Python 3.x** and **matplotlib library** installed (the last is installed by default in most GNU/Linux distros so no problems there).
+
 # How?
 
 ## Creating equations
