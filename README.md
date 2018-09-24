@@ -151,6 +151,22 @@ Of course, you can re-express in different forms any equation. Statements such a
     
 are valid too, and will perform the same operations shown above.
 
+At last, we can also graph our linear equations. Let's say we have the following code:
+    
+    # creates an instance of the SlopeIntercept class.   
+    linear = SlopeIntercept("y = 2.5x + 5")
+    
+    # returns all points formed by equation 'linear' for x values from -2 to 6.
+    points = linear.points(-2, 6)
+    
+    # graph the set of points passed as an argument for the equation 'linear'.
+    linear.graph(points)
+    
+This would produce the following graph:
+
+
+    
+   
 ## Quadratic equations
 
 Currently, only quadratic equations that are equal to 0 are supported.
