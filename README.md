@@ -160,11 +160,12 @@ At last, we can also graph our linear equations. Let's say we have the following
     points = linear.points(-2, 6)
     
     # graph the set of points passed as an argument for the equation 'linear'.
-    linear.graph(points)
+    # Label the y axis with "Money", the x axis with "Time" (will not label them with anything if no label arguments are passed).
+    linear.graph(points, "Money", "Time")
     
 This would produce the following graph:
 
-
+![graph](linear.jpg)
     
    
 ## Quadratic equations
