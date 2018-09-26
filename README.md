@@ -4,7 +4,7 @@ A simple library for quickly and efficiently solving basic algebraic expressions
 
 # Quick intro
 
-This library works in a similar way an interpreter does. Its singularity is that what it interprets is a special kind of language: **algebra**. It works with classes because algebraic properties are more similar to attributes of a thing than to variables or mere information. 
+This library works in a similar way an interpreter does. Its singularity is that what it interprets is a special kind of language: **algebra**. It works with classes because algebraic properties are more similar to attributes of a thing than to variables or mere information. I've made use of this conceptual correspondence and I've tried to simulate it the best I can anytime I considered it convenient. 
 
 # Requirements
 
