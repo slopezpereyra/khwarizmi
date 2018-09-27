@@ -1,7 +1,7 @@
 import math
-from exceptions import NegativeSquareError
 
-import equations
+from khwarizmi import equations
+from khwarizmi.exc import NegativeSquareError
 
 excused_operators = ["/", "."]
 
@@ -78,6 +78,8 @@ class Quadratic(equations.Equation):
 
         s = self.symbols
 
+        print(s.get("b"), s.get("a"), s.get("c"))
+
         try:
             square = math.sqrt(s.get("b") ** 2 - 4 * s.get("a") * s.get("c"))
         except ValueError:
@@ -97,7 +99,3 @@ class Quadratic(equations.Equation):
     def solve(self):
 
         self.get_solutions()
-
-
-QUA = Quadratic("5x**2 + 6x**2 + 1 = 0")
-print(QUA.plus_solution, QUA.minus_solution)
