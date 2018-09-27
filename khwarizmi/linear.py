@@ -431,7 +431,6 @@ class PointSlope (Linear):
             rewritten = 'y=' + slope + "x" + op + str(self.y_intercept)
 
             if '--' in rewritten:
-                print("ALELUYA")
                 rewritten = rewritten.replace('--', '+')
 
             return SlopeIntercept(rewritten)
