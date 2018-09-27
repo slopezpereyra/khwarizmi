@@ -1,6 +1,6 @@
 """Defines an equation class and its functions."""
 
-from custom_exceptions import NoEqualityError, NoVariableError
+from khwarizmi.exc import NoEqualityError, NoVariableError
 
 operators = ["-", "+", "/", "*"]
 excused_symbols = ["/", "."]
@@ -29,7 +29,7 @@ class Equation (object):
         self.sol_side = ""
         self.inc_side = ""
         self.get_sides()
-        self.incognitos = []
+        self.incognitos = self.get_all_incognitos()
         self.incognito = self.return_incognito()
         self.incognito_index = self.equation.index(self.incognito)
         self.mult_length = 0
@@ -61,6 +61,18 @@ class Equation (object):
             index += 1
 
         raise NoVariableError(self.equation)
+
+    def get_all_incognitos(self):
+        """Adds every incognito of the equation
+        to the incognitos attribute (list)."""
+
+        index, incs = 0, []
+        for symbol in self.equation:
+
+            if symbol.isalpha() and symbol not in incs:
+                incs.append(symbol)
+
+        return incs
 
     def return_inc_multiplier(self, inc_index=None, side=None):
         """Returns the incognito multiplier; i.e.  the number that multiplies the
@@ -236,6 +248,3 @@ class Equation (object):
 
         return eval(self.sol_side)
 
-
-EQUATION = Equation("234x - 45 = 33.6")
-print(EQUATION.inc_mult_index)

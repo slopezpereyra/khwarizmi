@@ -1,5 +1,8 @@
+"""Defines exceptions for this package."""
+
+
 class _EquationError (Exception):
-    """Baseclass for all equation-related errors."""
+    """Base class for all equation-related errors."""
 
     def __init__(self):
         pass

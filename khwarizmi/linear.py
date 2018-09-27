@@ -1,11 +1,11 @@
 """Linear class and specific linear types defined with its methods and attributes."""
 
-import equations
 import matplotlib.pyplot as plt
-from custom_exceptions import (InvalidFormError, LinearSolutionError,
-                               RedundantConversionError)
-from equations import operators
-from lib.misc import cond_assign, num
+from khwarizmi import equations
+from khwarizmi.equations import operators
+from khwarizmi.exc import (InvalidFormError, LinearSolutionError,
+                           RedundantConversionError)
+from khwarizmi.misc import cond_assign, num
 
 
 class Linear (equations.Equation):
@@ -13,7 +13,6 @@ class Linear (equations.Equation):
 
     def __init__(self, equation):
         equations.Equation.__init__(self, equation)
-        self.get_all_incognitos()
         self.equal_index = self.equation.index("=")
         self.indexed_incognitos = {self.incognitos[0]:
                                    self.equation.index(self.incognitos[0]),
@@ -24,16 +23,6 @@ class Linear (equations.Equation):
         self.slope = self.get_slope()
         self.y_intercept = self.solve_for("x", 0)
 
-    def get_all_incognitos(self):
-        """Adds every incognito of the equation
-        to the incognitos attribute (list)."""
-
-        index = 0
-        for symbol in self.equation:
-
-            if symbol.isalpha() and symbol not in self.incognitos:
-                self.incognitos.append(symbol)
-
     def return_multipliers(self):
         """Returns this equation incognito multipliers."""
 
@@ -43,6 +32,15 @@ class Linear (equations.Equation):
             return Standard(self.equation).return_multipliers()
         elif self.form == "Point-Slope Form":
             return PointSlope(self.equation).return_multipliers()
+
+    def express_as(self, form):
+
+        if self.form == "Slope-Intercept Form":
+            return SlopeIntercept(self.equation).express_as(form)
+        elif self.form == "Standard Form":
+            return Standard(self.equation).express_as(form)
+        elif self.form == "Point-Slope Form":
+            return PointSlope(self.equation).express_as(form)
 
     def get_slope(self):
         """Returns the slope of this linear equation."""
@@ -68,6 +66,7 @@ class Linear (equations.Equation):
         """
 
         solutions = []
+
         for i in range(a, b + 1):
             equation = self.sol_side
             if self.equation[self.indexed_incognitos["x"] - 1] == "(":
@@ -101,7 +100,7 @@ class Linear (equations.Equation):
 
         x, y = [], []
 
-        x.extend((points[0][0], points[-1][0]))
+        x.extend(points[0][0], points[-1][0])
         y.extend((points[0][1], points[-1][1]))
 
         plt.plot(x, y)
@@ -118,7 +117,7 @@ class Linear (equations.Equation):
 
         if self.form == "Point-Slope Form":
 
-            return self.sort_for_pl_form(for_variable)
+            return PointSlope(self.equation).sort(for_variable)
 
         elif self.form == "Slope-Intercept Form":
             return SlopeIntercept(self.equation).sort(for_variable)
@@ -246,6 +245,9 @@ class SlopeIntercept(Linear):
             rewritten = x_op + slope + "x" + \
                 y_op + y_mult + "y" + "=" + str(self.y_intercept)
 
+            if '--' in rewritten:
+                rewritten = rewritten.replace('--', '+')
+
             return Standard(rewritten)
 
         elif form == "Point-Slope":
@@ -254,6 +256,9 @@ class SlopeIntercept(Linear):
 
             rewritten = "y-" + y_point + "=" + \
                 slope + "(x-" + x_point + ")"
+
+            if '--' in rewritten:
+                rewritten = rewritten.replace('--', '+')
 
             return PointSlope(rewritten)
 
@@ -329,12 +334,18 @@ class Standard (Linear):
             rewritten = "y-" + y_point + "=" + \
                 slope + "(x-" + x_point + ")"
 
+            if '--' in rewritten:
+                rewritten = rewritten.replace('--', '+')
+
             return PointSlope(rewritten)
 
         elif form == "Slope-Intercept":
             op = "-" if eqtn[eqtn.find("=") + 1] == "-" else "+"
 
             rewritten = "y=" + slope + "x" + op + str(self.y_intercept)
+
+            if '--' in rewritten:
+                rewritten = rewritten.replace('--', '+')
 
             return SlopeIntercept(rewritten)
 
@@ -419,6 +430,10 @@ class PointSlope (Linear):
             op = cond_assign(self.y_intercept < 0, '-', '+')
             rewritten = 'y=' + slope + "x" + op + str(self.y_intercept)
 
+            if '--' in rewritten:
+                print("ALELUYA")
+                rewritten = rewritten.replace('--', '+')
+
             return SlopeIntercept(rewritten)
 
         elif form == 'Standard':
@@ -430,9 +445,7 @@ class PointSlope (Linear):
             rewritten = self.multipliers['x'] + 'x' + op + \
                 y_mult + 'y' + '=' + str(self.y_intercept)
 
+            if '--' in rewritten:
+                rewritten = rewritten.replace('--', '+')
+
             return Standard(rewritten)
-
-
-SLOPE = SlopeIntercept("y = 2.5x + 5")
-
-SLOPE.graph(SLOPE.points(-2, 6), "Money", "Time")
