@@ -1,54 +1,83 @@
 """Linear class and specific linear types defined with its methods and attributes."""
 
 import matplotlib.pyplot as plt
+
 from khwarizmi import equations
-from khwarizmi.equations import operators
 from khwarizmi.exc import (InvalidFormError, LinearSolutionError,
-                           RedundantConversionError)
-from khwarizmi.misc import cond_assign, num
+                           RedundantConversionError, UnableToDefineFormError)
+from khwarizmi.misc import if_assign, num
 
 
-class Linear (equations.Equation):
+class Linear(equations.Equation):
     """Base class for all linear equations."""
 
     def __init__(self, equation):
         equations.Equation.__init__(self, equation)
         self.equal_index = self.equation.index("=")
         self.indexed_incognitos = {self.incognitos[0]:
-                                   self.equation.index(self.incognitos[0]),
+                                       self.equation.index(self.incognitos[0]),
                                    self.incognitos[1]:
-                                   self.equation.index(self.incognitos[1])}
+                                       self.equation.index(self.incognitos[1])}
         self.form = self.get_form()
-        self.multipliers = self.return_multipliers()
+        self.x_mult = self.get_x_multiplier()
+        self.y_mult = self.get_y_multiplier()
         self.slope = self.get_slope()
         self.y_intercept = self.solve_for("x", 0)
 
-    def return_multipliers(self):
-        """Returns this equation incognito multipliers."""
+    def get_x_multiplier(self):
+        """Returns whatever number is multiplying the x variable on this equation."""
 
-        if self.form == "Slope-Intercept Form":
-            return SlopeIntercept(self.equation).return_multipliers()
-        elif self.form == "Standard Form":
-            return Standard(self.equation).return_multipliers()
-        elif self.form == "Point-Slope Form":
-            return PointSlope(self.equation).return_multipliers()
+        side = if_assign(self.form == 'Standard Form', self.equation, self.sol_side)
+
+        if side[0] == '-':
+            x_mult = if_assign(side[1].isdigit(), self.get_number(side[1], 1, side), -1)
+            return '-' + x_mult
+        if side[0].isdigit():
+            x_mult = self.get_number(side[0], 0)
+        else:
+            x_mult = 1
+
+        return x_mult
+
+    def get_y_multiplier(self):
+        """Returns whateer number is multiplying the y variable on this equation"""
+
+        eqtn, index = self.equation, self.equation.index('x') + 2
+
+        if self.form == 'Standard Form':
+            y_mult = if_assign(eqtn[index].isdigit(), self.get_number(eqtn[index], index), "1")
+        else:
+            y_mult = if_assign(eqtn[0].isdigit(), self.get_number(eqtn[0], 0), "1")
+
+        return y_mult
 
     def express_as(self, form):
+        """Expresses the equation in the form passed as an argument
+        and returns an instance of that form's class as the new expression.
+
+        Valid forms are Slope-Intercept, Standard and Point-Slope.
+        Keyword arguments:
+
+        form (str): the form the equation will be converted to"""
 
         if self.form == "Slope-Intercept Form":
             return SlopeIntercept(self.equation).express_as(form)
-        elif self.form == "Standard Form":
+        if self.form == "Standard Form":
             return Standard(self.equation).express_as(form)
-        elif self.form == "Point-Slope Form":
+        if self.form == "Point-Slope Form":
             return PointSlope(self.equation).express_as(form)
+
+        return None
 
     def get_slope(self):
         """Returns the slope of this linear equation."""
 
         a_points, b_points = self.get_point(1), self.get_point(2)
-        return (a_points[1] - b_points[1]) / (a_points[0] - b_points[0])
+        return num((a_points[1] - b_points[1]) / (a_points[0] - b_points[0]))
 
     def get_form(self):
+        """ Returns the form of this linear equation."""
+
         if "x" in self.inc_side and "y" in self.inc_side:
             return "Standard Form"
         if self.equation[self.equal_index - 1] == "y":
@@ -56,24 +85,22 @@ class Linear (equations.Equation):
         if self.inc_side[0] == "y" and self.equation[self.equal_index - 1].isdigit():
             return "Point-Slope Form"
 
+        raise UnableToDefineFormError(self.equation)
+
     def points(self, a, b):
         """Returns the points formed by all values of x between a and b.
 
         Keyword Arguments:
 
-        a: initial value of the iteration.
-        b: last value of the iteration.
+        a (int): initial value of the iteration.
+        b (int): last value of the iteration.
         """
 
         solutions = []
 
         for i in range(a, b + 1):
-            equation = self.sol_side
-            if self.equation[self.indexed_incognitos["x"] - 1] == "(":
-                equation = equation.replace("(x", "*(" + str(i))
-            else:
-                equation = equation.replace("x", "*" + str(i))
             solutions.append(tuple((i, self.solve_for("x", i))))
+
         return solutions
 
     def get_point(self, x_value):
@@ -81,22 +108,24 @@ class Linear (equations.Equation):
 
         Keyword arguments:
 
-        x_value : the value of x the equation will be evaluated with to return
+        x_value (int): the value of x the equation will be evaluated with to return
         the point."""
 
         # Confusing, uh? Returns, as a tuple, the value of x and the resulting
         # value of y.
 
-        return(tuple((x_value, self.solve_for("x", x_value))))
+        return tuple((x_value, self.solve_for("x", x_value)))
 
     def graph(self, points, y_label="", x_label=""):
         """Graphs the line formed by points.
 
         Keyword arguments:
 
-        points : the points that define the line.
-        y_label : label to describe the y axis (optional)
-        x_label : label to describe the x axis (optionl)"""
+        points (list of tuples): the points that define the line.
+
+        y_label (str): label to describe the y axis (optional)
+
+        x_label (str): label to describe the x axis (optionl)"""
 
         x, y = [], []
 
@@ -109,25 +138,37 @@ class Linear (equations.Equation):
 
         plt.show()
 
-    def solve(self):
+    def solve(self, show=False):
+        """Overwriten solve() method inherited from Equation class
+        to raise error if used on Linear class."""
+
         raise LinearSolutionError()
 
     def sort(self, for_variable):
-        """Sorts this equation depending on its type."""
+        """Sorts this equation depending on its type to be solved
+        for the variable argument.
+
+        Keyword arguments:
+
+        for_variable (str): the variable to sort the equation for."""
 
         if self.form == "Point-Slope Form":
-
             return PointSlope(self.equation).sort(for_variable)
-
-        elif self.form == "Slope-Intercept Form":
+        if self.form == "Slope-Intercept Form":
             return SlopeIntercept(self.equation).sort(for_variable)
 
-        else:
-            std = Standard(self.equation)
-            return std.sort(for_variable)
+        return Standard(self.equation).sort(for_variable)
 
     def show_sorted(self, variable, value, sol_side):
-        """Shows the side pass as parameter sorted for the equation variable."""
+        """Shows the side pass as parameter sorted for the equation variable.
+
+        Keyword arguments:
+
+        variable (str): the variable to show the equation sorted for.
+
+        value (int): the value that will replace the variable we are sorting for.
+
+        sol_side: the side of the equation that was sorted (the solution side)."""
 
         if variable is self.incognitos[0]:
             inc = self.incognitos[1]
@@ -141,12 +182,11 @@ class Linear (equations.Equation):
 
         Keyword Arguments:
 
-        variable : the variable to be replaced by a value.
-        value : the value to replace the variable by.
-        (optional) show : print the sorted equation."""
+        variable (str): the variable to be replaced by a value.
+        value (int): the value to replace the variable by.
+        (optional) show (bool) : print the sorted equation."""
 
-        eqtn, indexed_inc = self.equation, self.indexed_incognitos
-        value = str(value)
+        eqtn, value = self.equation, str(value)
 
         sol_side = self.sort(variable)
 
@@ -170,45 +210,36 @@ class SlopeIntercept(Linear):
     def __str__(self):
         return self.equation
 
-    def return_multipliers(self):
-        """Returns this equation incognito multipliers."""
-
-        index, eqtn = self.equal_index + 1, self.equation
-        x_mult = cond_assign(
-            eqtn[index + 1].isdigit(), self.get_number(eqtn[index + 1], index + 1), "1")
-        y_mult = cond_assign(
-            eqtn[0].isdigit(), self.get_number(eqtn[0], 0), "1")
-
-        return {"x": x_mult, "y": y_mult}
-
     def sort(self, for_variable):
         """Sorts a Slope-Intercept Form linear equation
         to be solved for a given variable.
 
         Keyword arguments:
 
-        variable : the variable this equation will be sorted to solve for."""
+        variable(str) : the variable this equation will be sorted to solve for."""
 
         eqtn = self.equation
         sol_side = self.sol_side
 
-        y_mult = cond_assign(
+        y_mult = if_assign(
             eqtn[0].isdigit(), self.get_number(eqtn[0], 0), "1")
 
         # Sorts everything to solve for x.
         if for_variable == 'x':
             sol_side = "(" + sol_side + ")/" + y_mult
-            sol_side = sol_side.replace(
-                for_variable, "*" + for_variable)
+            if sol_side[sol_side.index('x') - 1].isdigit():
+                sol_side = sol_side.replace(
+                    for_variable, "*" + for_variable)
+
+            if '--' in sol_side:
+                sol_side = sol_side.replace('--', '+')
 
             return sol_side
 
         # Sorts everything to solve for y.
-        y_index = self.indexed_incognitos["y"]
         x_index = self.indexed_incognitos["x"]
 
         if eqtn[x_index - 1] == "(":
-
             b_index = sol_side.find("+") + 1
             b = self.get_number(sol_side[b_index], b_index, sol_side)
 
@@ -216,19 +247,22 @@ class SlopeIntercept(Linear):
             return sol_side
 
         sol_side = "(" + y_mult + "*y-" + \
-            str(self.y_intercept) + ")/" + str(self.slope)
+                   str(self.y_intercept) + ")/" + str(self.slope)
+        if '--' in sol_side:
+            sol_side = sol_side.replace('--', '+')
 
         return sol_side
 
     def express_as(self, form):
-        """Returns an instance of this equation of the class that corresponds
-        to the linear equation form passed as argument.
+        """Expresses the equation in the form passed as an argument
+        and returns an instance of that form's class as the new expression.
 
+        Valid forms are Slope-Intercept, Standard and Point-Slope.
         Keyword arguments:
 
-        form : the form the equation will be expressed in."""
+        form (str): the form the equation will be converted to"""
 
-        eqtn, slope, mults = self.equation, str(self.slope), self.multipliers
+        eqtn, slope = self.equation, str(self.slope)
         forms = ["Slope-Intercept", "Point-Slope", "Standard"]
         if form not in forms:
             raise InvalidFormError(form, forms)
@@ -238,32 +272,34 @@ class SlopeIntercept(Linear):
         if form == "Standard":
 
             slope = slope.replace('-', '')
-            y_op = cond_assign(eqtn[0] == '-', '-', '+')
-            y_mult = cond_assign(mults['y'] == '1', '', mults['y'])
-            x_op = cond_assign(self.slope < 0, '', '-')
+            y_op = if_assign(eqtn[0] == '-', '-', '+')
+            y_mult = if_assign(self.y_mult == '1', '', self.y_mult)
+            x_op = if_assign(self.slope < 0, '', '-')
 
             rewritten = x_op + slope + "x" + \
-                y_op + y_mult + "y" + "=" + str(self.y_intercept)
+                        y_op + y_mult + "y" + "=" + str(self.y_intercept)
 
             if '--' in rewritten:
                 rewritten = rewritten.replace('--', '+')
 
             return Standard(rewritten)
 
-        elif form == "Point-Slope":
+        if form == "Point-Slope":
             points = self.get_point(2)
             x_point, y_point = str(points[0]), str(points[1])
 
             rewritten = "y-" + y_point + "=" + \
-                slope + "(x-" + x_point + ")"
+                        slope + "(x-" + x_point + ")"
 
             if '--' in rewritten:
                 rewritten = rewritten.replace('--', '+')
 
             return PointSlope(rewritten)
 
+        raise InvalidFormError(form, forms)
 
-class Standard (Linear):
+
+class Standard(Linear):
     """Class for linear equations of Standard Form."""
 
     def __init__(self, equation):
@@ -272,52 +308,41 @@ class Standard (Linear):
     def __str__(self):
         return self.equation
 
-    def return_multipliers(self):
-        """Returns this equation incognito multipliers."""
-
-        eqtn, index = self.equation, self.equation.find("x") + 2
-
-        x_mult = cond_assign(
-            eqtn[0].isdigit(), self.get_number(eqtn[0], 0), "1")
-        y_mult = cond_assign(eqtn[index].isdigit(),
-                             self.get_number(eqtn[index], index), "1")
-
-        return {"x": x_mult, "y": y_mult}
-
     def sort(self, for_variable):
         """Sorts a Standard Form linear equation
         to be solved for a given variable.
 
         Keyword arguments:
 
-        variable : the variable this equation will be sorted to solve for."""
+        variable (str): the variable this equation will be sorted to solve for."""
 
         eqtn = self.equation
-        sol_side = self.sol_side
-
-        c_pos = eqtn.find("=") + 1
-        a, b = self.multipliers["x"], self.multipliers["y"]
-
+        c_pos, a, b = eqtn.find("=") + 1, self.x_mult, self.y_mult
         c = self.get_number(eqtn[c_pos], c_pos)
+        den = if_assign(for_variable == 'y', a, b)
+        mult = if_assign(for_variable == 'y', b, a)
 
-        den = cond_assign(for_variable == 'y', a, b)
-        mult = cond_assign(for_variable == 'y', b, a)
-
-        if eqtn[self.indexed_incognitos[for_variable] - len(mult) - 1] == "-":
-            op = "+"
+        if eqtn[eqtn.index(for_variable) - len(mult) - 1] == "-":
+            operator = "+"
         else:
-            op = "-"
+            operator = "-"
 
-        sol_side = "(" + c + op + mult + "*" + for_variable + ")" + "/" + den
+
+        sol_side = "(" + c + operator + mult + "*" + for_variable + ")" + "/" + den
+
+        if '--' in sol_side:
+            sol_side = sol_side.replace('--', '+')
+
         return sol_side
 
     def express_as(self, form):
-        """Returns an instance of this equation of the class that corresponds
-        to the linear equation form passed as argument.
+        """Expresses the equation in the form passed as an argument
+        and returns an instance of that form's class as the new expression.
 
+        Valid forms are Slope-Intercept, Standard and Point-Slope.
         Keyword arguments:
 
-        form : the form the equation will be expressed in."""
+        form (str): the form the equation will be converted to"""
 
         eqtn, slope = self.equation, str(self.slope)
         forms = ["Slope-Intercept", "Point-Slope", "Standard"]
@@ -332,25 +357,27 @@ class Standard (Linear):
             x_point, y_point = str(points[0]), str(points[1])
 
             rewritten = "y-" + y_point + "=" + \
-                slope + "(x-" + x_point + ")"
+                        slope + "(x-" + x_point + ")"
 
             if '--' in rewritten:
                 rewritten = rewritten.replace('--', '+')
 
             return PointSlope(rewritten)
 
-        elif form == "Slope-Intercept":
-            op = "-" if eqtn[eqtn.find("=") + 1] == "-" else "+"
+        if form == "Slope-Intercept":
+            operator = "-" if eqtn[eqtn.find("=") + 1] == "-" else "+"
 
-            rewritten = "y=" + slope + "x" + op + str(self.y_intercept)
+            rewritten = "y=" + slope + "x" + operator + str(self.y_intercept)
 
             if '--' in rewritten:
                 rewritten = rewritten.replace('--', '+')
 
             return SlopeIntercept(rewritten)
 
+        return None
 
-class PointSlope (Linear):
+
+class PointSlope(Linear):
     """Class for all linear equations of Point-Slope form."""
 
     def __init__(self, equation):
@@ -358,23 +385,6 @@ class PointSlope (Linear):
 
     def __str__(self):
         return self.equation
-
-    def return_multipliers(self):
-        """Returns this equation incognito multipliers."""
-
-        eqtn, index = self.equation, self.equal_index + 1
-
-        if eqtn[index] in operators:
-            x_mult = cond_assign(
-                eqtn[index + 1].isdigit(), self.get_number(eqtn[index + 1], index + 1), "1")
-        elif eqtn[index].isdigit():
-            x_mult = cond_assign(eqtn[index].isdigit(
-            ), self.get_number(eqtn[index], index), "1")
-
-        y_mult = cond_assign(eqtn[0].isdigit(),
-                             self.get_number(eqtn[0], 0), "1")
-
-        return {"x": x_mult, "y": y_mult}
 
     def sort(self, for_variable):
         """Sorts a Point-Slope Form linear equation
@@ -395,27 +405,36 @@ class PointSlope (Linear):
         if for_variable == 'y':
 
             sol_side = "(y" + eqtn[y_index + 1] + \
-                y_point + "+" + slope + "*" + x_point + ")/" + slope
+                       y_point + "+" + slope + "*" + x_point + ")/" + slope
+
+            if '--' in sol_side:
+                sol_side = sol_side.replace('--', '+')
 
             return sol_side
 
-        elif for_variable == 'x':
+        if for_variable == 'x':
 
-            first_op = cond_assign(eqtn[y_index + 1] == '-', '+', '-')
+            first_op = if_assign(eqtn[y_index + 1] == '-', '+', '-')
             second_op = eqtn[x_index + 1]
 
             sol_side = slope + \
-                "*(x" + second_op + x_point + ")" + first_op + y_point
+                       "*(x" + second_op + x_point + ")" + first_op + y_point
+
+            if '--' in sol_side:
+                sol_side = sol_side.replace('--', '+')
 
             return sol_side
 
-    def express_as(self, form):
-        """Returns an instance of this equation of the class that corresponds
-        to the linear equation form passed as argument.
+        return None
 
+    def express_as(self, form):
+        """Expresses the equation in the form passed as an argument
+        and returns an instance of that form's class as the new expression.
+
+        Valid forms are Slope-Intercept, Standard and Point-Slope.
         Keyword arguments:
 
-        form : the form the equation will be expressed in."""
+        form (str): the form the equation will be converted to"""
 
         eqtn, slope = self.equation, str(self.slope)
         forms = ["Slope-Intercept", "Point-Slope", "Standard"]
@@ -427,24 +446,53 @@ class PointSlope (Linear):
 
         if form == 'Slope-Intercept':
 
-            op = cond_assign(self.y_intercept < 0, '-', '+')
-            rewritten = 'y=' + slope + "x" + op + str(self.y_intercept)
+            operator = if_assign(self.y_intercept < 0, '-', '+')
+            rewritten = 'y=' + slope + "x" + operator + str(self.y_intercept)
 
             if '--' in rewritten:
                 rewritten = rewritten.replace('--', '+')
 
             return SlopeIntercept(rewritten)
 
-        elif form == 'Standard':
+        if form == 'Standard':
 
-            op = cond_assign(eqtn[0] == '-', '-', '+')
-            y_mult = cond_assign(
-                self.multipliers['y'] == '1', '', self.multipliers['y'])
+            operator = if_assign(eqtn[0] == '-', '-', '+')
+            y_mult = if_assign(self.y_mult == '1', '', self.y_mult)
 
-            rewritten = self.multipliers['x'] + 'x' + op + \
-                y_mult + 'y' + '=' + str(self.y_intercept)
+            rewritten = self.x_mult + 'x' + operator + \
+                        y_mult + 'y' + '=' + str(self.y_intercept)
 
             if '--' in rewritten:
                 rewritten = rewritten.replace('--', '+')
 
             return Standard(rewritten)
+
+        return None
+
+
+class LinearSystem:
+    """This class defines the Linear System object to work with
+    systems of equations."""
+
+    def __init__(self, first, second):
+        self.first = first
+        self.second = second
+
+    def iscompatible(self):
+        """Returns true if there's any value of x that equally satisfies
+        both equations."""
+
+        return True if self.first.slope != self.second.slope else False
+
+    def solutions(self):
+        """ Returns the number of solutions for this system
+        of equations"""
+
+        if self.iscompatible() is True:
+            if self.first.points(1, 2) == self.second.points(1, 2):
+                return 'Infinitely many solutions'
+
+            return 'One solution'
+
+        return 'No solutions'
+

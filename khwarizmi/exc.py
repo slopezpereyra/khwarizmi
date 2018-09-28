@@ -7,6 +7,18 @@ class _EquationError (Exception):
     def __init__(self):
         pass
 
+class UnableToDefineFormError(_EquationError):
+
+    def __init__(self, equation):
+        _EquationError.__init__(self)
+        self.equation = equation
+
+    def __str__(self):
+
+        error_string = """Khwarizmi was unable to define a form for {}.
+                        Your linear equation should be on Standard, 
+                        Slope-Intercept or Point-Slope form.""".format(self.equation)
+        return error_string
 
 class NoVariableError (_EquationError):
 
