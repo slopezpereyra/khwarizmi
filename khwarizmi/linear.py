@@ -4,9 +4,11 @@ import matplotlib.pyplot as plt
 
 from khwarizmi import equations
 from khwarizmi.exc import (InvalidFormError, LinearSolutionError,
-                           RedundantConversionError, UnableToDefineFormError)
+                           RedundantConversionError, UnableToDefineFormError, UnsuitableSlopeInterceptForm)
 from khwarizmi.misc import if_assign, num
 
+
+# TODO: Find an easy, non-expensive way to efficiently determine the solution of a system of equations.
 
 class Linear(equations.Equation):
     """Base class for all linear equations."""
@@ -22,7 +24,7 @@ class Linear(equations.Equation):
         self.x_mult = self.get_x_multiplier()
         self.y_mult = self.get_y_multiplier()
         self.slope = self.get_slope()
-        self.y_intercept = self.solve_for("x", 0)
+        self.y_intercept = num(self.solve_for("x", 0))
 
     def get_x_multiplier(self):
         """Returns whatever number is multiplying the x variable on this equation."""
@@ -33,7 +35,7 @@ class Linear(equations.Equation):
             x_mult = if_assign(side[1].isdigit(), self.get_number(side[1], 1, side), -1)
             return '-' + x_mult
         if side[0].isdigit():
-            x_mult = self.get_number(side[0], 0)
+            x_mult = self.get_number(side[0], 0, side)
         else:
             x_mult = 1
 
@@ -46,8 +48,14 @@ class Linear(equations.Equation):
 
         if self.form == 'Standard Form':
             y_mult = if_assign(eqtn[index].isdigit(), self.get_number(eqtn[index], index), "1")
+            if eqtn[eqtn.index(y_mult) - 1] == '-':
+                y_mult = '-' + y_mult
         else:
-            y_mult = if_assign(eqtn[0].isdigit(), self.get_number(eqtn[0], 0), "1")
+            if eqtn[0] == '-':
+                y_mult = if_assign(eqtn[1].isdigit(), self.get_number(eqtn[1], 1), "1")
+                y_mult = '-' + y_mult
+            else:
+                y_mult = if_assign(eqtn[0].isdigit(), self.get_number(eqtn[0], 0), "1")
 
         return y_mult
 
@@ -187,7 +195,6 @@ class Linear(equations.Equation):
         (optional) show (bool) : print the sorted equation."""
 
         eqtn, value = self.equation, str(value)
-
         sol_side = self.sort(variable)
 
         if eqtn[eqtn.find(variable) - 1] == "(" and self.form != "Point-Slope Form":
@@ -221,8 +228,7 @@ class SlopeIntercept(Linear):
         eqtn = self.equation
         sol_side = self.sol_side
 
-        y_mult = if_assign(
-            eqtn[0].isdigit(), self.get_number(eqtn[0], 0), "1")
+        y_mult = self.y_mult
 
         # Sorts everything to solve for x.
         if for_variable == 'x':
@@ -238,6 +244,9 @@ class SlopeIntercept(Linear):
 
         # Sorts everything to solve for y.
         x_index = self.indexed_incognitos["x"]
+
+        if any(char.isdigit() for char in self.inc_side):
+            raise UnsuitableSlopeInterceptForm(eqtn)
 
         if eqtn[x_index - 1] == "(":
             b_index = sol_side.find("+") + 1
@@ -327,8 +336,9 @@ class Standard(Linear):
         else:
             operator = "-"
 
+        den_operator = if_assign(eqtn[eqtn.find(den) - 1] == '-', '-', '')
 
-        sol_side = "(" + c + operator + mult + "*" + for_variable + ")" + "/" + den
+        sol_side = "(" + c + operator + mult + "*" + for_variable + ")" + "/" + den_operator + den
 
         if '--' in sol_side:
             sol_side = sol_side.replace('--', '+')
@@ -405,7 +415,7 @@ class PointSlope(Linear):
         if for_variable == 'y':
 
             sol_side = "(y" + eqtn[y_index + 1] + \
-                       y_point + "+" + slope + "*" + x_point + ")/" + slope
+                       y_point + "-" + slope + "*" + x_point + ")/" + slope
 
             if '--' in sol_side:
                 sol_side = sol_side.replace('--', '+')
@@ -495,4 +505,3 @@ class LinearSystem:
             return 'One solution'
 
         return 'No solutions'
-

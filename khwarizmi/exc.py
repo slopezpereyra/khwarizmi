@@ -56,6 +56,20 @@ class LinearSolutionError (_EquationError):
         return error_string
 
 
+class UnsuitableSlopeInterceptForm(_EquationError):
+
+    def __init__(self, equation):
+        _EquationError.__init__(self)
+        self.equation = equation
+
+    def __str__(self):
+        error_string = """This Slope-Intercept equation {} is unsuitable, probably
+                        because y is multiplied by some value n. You should divide 
+                        everything by that value and define the equation under the form
+                        y = mx/n + c/n""".format(self.equation)
+        return error_string
+
+
 class NegativeSquareError(_EquationError):
 
     def __init__(self):

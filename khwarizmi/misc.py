@@ -9,7 +9,10 @@ def num(value):
 
     a : string representation of a value or numerical value."""
 
-    return int(value) if str(value).endswith(".0") else float(value)
+    if '.' in str(value) and not str(value).endswith('.0'):
+        return float(value)
+    else:
+        return int(value)
 
 
 def if_assign(condition, if_true, if_false):
@@ -18,3 +21,4 @@ def if_assign(condition, if_true, if_false):
 else returns if_false. Saves lines and ugly if-else use."""
 
     return if_true if condition else if_false
+
