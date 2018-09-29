@@ -110,6 +110,22 @@ class Equation (object):
         except ValueError:
             raise NoEqualityError(self.equation)
 
+    @staticmethod
+    def beautify(expression):
+        """Beautifies a mathematical expression, turning '--' into '+',
+        '+*' into '*', etc."""
+
+        if '--' in expression:
+            expression = expression.replace('--', '+')
+
+        if '*+' in expression:
+            expression = expression.replace('*+', '*')
+
+        if expression[0] == '+':
+            expression = expression.replace('+', '', 1)
+
+        return expression
+
     def get_operator(self, number_pos, full_number):
         """Returns the operator to be used on a specific number to clear it
         from the side of the equation it is in. For example, for the equation

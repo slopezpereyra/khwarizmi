@@ -64,9 +64,10 @@ class UnsuitableSlopeInterceptForm(_EquationError):
 
     def __str__(self):
         error_string = """This Slope-Intercept equation {} is unsuitable, probably
-                        because y is multiplied by some value n. You should divide 
-                        everything by that value and define the equation under the form
-                        y = mx/n + c/n""".format(self.equation)
+                        because y is multiplied by some value n or you are multiplying 
+                        the whole solution side by some value m. If your equation looks like
+                        y = m (x + i) or ny = x + i, write the equation with the value m or n
+                        distributed to form a pure Slope-Intercept equation.""".format(self.equation)
         return error_string
 
 

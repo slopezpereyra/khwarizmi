@@ -1,7 +1,7 @@
 from setuptools import setup
 
 setup(name='khwarizmi',
-      version='0.1',
+      version='0.2',
       description='Because algebra is pretty',
       url='https://github.com/lpereyrasantiago/khwarizmi',
       author='lpereyrasantiago',
