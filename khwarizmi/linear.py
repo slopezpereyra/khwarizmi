@@ -8,8 +8,6 @@ from khwarizmi.exc import (InvalidFormError, LinearSolutionError,
 from khwarizmi.misc import if_assign, num
 
 
-# TODO: Find an easy, non-expensive way to efficiently determine the solution of a system of equations.
-
 class Linear(Equation):
     """Base class for all linear equations."""
 
@@ -28,7 +26,7 @@ class Linear(Equation):
         side = if_assign(self.form == 'Standard Form', self.equation, self.sol_side)
 
         if side[0] == '-':
-            x_mult = if_assign(side[1].isdigit(), self.get_number(side[1], 1, side), -1)
+            x_mult = if_assign(side[1].isdigit(), self.get_number(side[1], 1, side), "1")
             return '-' + x_mult
         if side[0].isdigit():
             x_mult = self.get_number(side[0], 0, side)
