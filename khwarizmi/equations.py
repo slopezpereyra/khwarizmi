@@ -124,6 +124,8 @@ class Equation (object):
         if expression[0] == '+':
             expression = expression.replace('+', '', 1)
 
+        expression = expression.replace('/+', '/')
+
         return expression
 
     def get_operator(self, number_pos, full_number):

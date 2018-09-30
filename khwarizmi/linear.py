@@ -36,7 +36,7 @@ class Linear(Equation):
         return x_mult
 
     def get_y_multiplier(self):
-        """Returns whateer number is multiplying the y variable on this equation"""
+        """Returns whatever number is multiplying the y variable on this equation"""
 
         eqtn, index = self.equation, self.equation.index('x') + 2
 
@@ -239,9 +239,10 @@ class SlopeIntercept(Linear):
         eqtn, sol_side = self.equation, self.sol_side
         x_index = eqtn.index('x')
         operator = if_assign(eqtn[x_index + 1] == '-', '+', '-')
+        slope_sign = if_assign(eqtn[0] == '-', '-', '')
 
         sol_side = "(" + self.y_mult + "*y" + operator + \
-                   str(self.y_intercept).replace('-', '') + ")/" + self.x_mult
+                   str(self.y_intercept).replace('-', '') + ")/" + slope_sign + str(self.slope)
         sol_side = Equation.beautify(sol_side)
 
         return sol_side

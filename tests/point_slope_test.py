@@ -99,7 +99,7 @@ class SlopeInterceptTest(unittest.TestCase):
         self.assertEqual(self.linear_3.solve_for('x', -4), -19.5)
         self.assertEqual(self.linear_4.solve_for('x', 0.5), 10.375)
 
-    def test_solving_for_x(self):
+    def test_solving_for_y(self):
         self.assertEqual(self.linear_1.solve_for('y', 3), 1.5)
         self.assertEqual(self.linear_2.solve_for('y', 9), 2.3333333333333335)
         self.assertEqual(self.linear_3.solve_for('y', -4), -2.45)
