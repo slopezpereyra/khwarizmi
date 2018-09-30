@@ -370,18 +370,16 @@ class Standard(Linear):
             rewritten = "y-" + y_point + "=" + \
                         slope + "(x-" + x_point + ")"
 
-            if '--' in rewritten:
-                rewritten = rewritten.replace('--', '+')
+            rewritten = Equation.beautify(rewritten)
 
             return PointSlope(rewritten)
 
         if form == "Slope-Intercept":
-            operator = "-" if eqtn[eqtn.find("=") + 1] == "-" else "+"
+            operator = "+" if self.y_intercept > 0 else ""
 
             rewritten = "y=" + slope + "x" + operator + str(self.y_intercept)
 
-            if '--' in rewritten:
-                rewritten = rewritten.replace('--', '+')
+            rewritten = Equation.beautify(rewritten)
 
             return SlopeIntercept(rewritten)
 
@@ -515,3 +513,5 @@ class LinearSystem:
             return 'One solution'
 
         return 'No solutions'
+
+print(Standard('5x + y = -15').y_intercept)

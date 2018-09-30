@@ -124,6 +124,9 @@ class Equation (object):
         if expression[0] == '+':
             expression = expression.replace('+', '', 1)
 
+        if '+-' in expression:
+            expression = expression.replace('+-', '-')
+
         expression = expression.replace('/+', '/')
 
         return expression
