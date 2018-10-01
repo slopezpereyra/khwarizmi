@@ -3,7 +3,7 @@
 from khwarizmi.exc import NoEqualityError, NoVariableError
 from khwarizmi.misc import num, if_assign
 
-operators = ["-", "+", "/", "*"]
+OPERATORS = ["-", "+", "/", "*"]
 excused_symbols = ["/", "."]
 
 
@@ -147,7 +147,7 @@ class Equation (object):
 
         character = self.inc_side[number_pos]
 
-        if number_pos > 0 and character not in operators:
+        if number_pos > 0 and character not in OPERATORS:
             if full_number == self.inc_multiplier:
                 if self.inc_side[self.inc_mult_index - 1] == '-':
                     return "/-"
@@ -230,7 +230,7 @@ class Equation (object):
                     self.sol_side += operator + symbol
                     self.inc_side = self.inc_side.replace(
                         symbol, "", 1)
-                    if previous_symbol in operators:
+                    if previous_symbol in OPERATORS:
                         # If there's an operator before this symbol, erase it.
 
                         self.inc_side = self.inc_side.replace(
@@ -269,4 +269,3 @@ class Equation (object):
         return num(eval(self.sol_side))
 
 
-Equation('-3x=-6-5').solve()

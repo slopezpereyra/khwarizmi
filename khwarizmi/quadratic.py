@@ -3,8 +3,6 @@ import math
 from khwarizmi import equations
 from khwarizmi.exc import NegativeSquareError
 
-excused_operators = ["/", "."]
-
 
 class Quadratic(equations.Equation):
 

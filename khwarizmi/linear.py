@@ -132,7 +132,7 @@ class Linear(Equation):
 
         x, y = [], []
 
-        x.extend(points[0][0], points[-1][0])
+        x.extend((points[0][0], points[-1][0]))
         y.extend((points[0][1], points[-1][1]))
 
         plt.plot(x, y)
@@ -540,11 +540,38 @@ class LinearSystem:
         x_mult = '' if x_mult == '1' else x_mult
         equation = x_mult + 'x' + '=' + str(self.linear_1.y_intercept) + '-' + str(self.linear_2.y_intercept)
 
-        print("EQUATION ", equation)
-
-        x_value = Equation(equation).solve(True)
+        x_value = Equation(equation).solve()
 
         return self.linear_1.get_point(x_value)
 
+    def graph(self):
+
+        solution_point = self.solve()
+        x_solution, y_solution = solution_point[0], solution_point[1]
+
+        first_line = self.linear_1.points(x_solution - 3, x_solution + 3) # ERROR : THIS TAKES POINTS SINCE X = X_SOLUTION TILL X!!! = Y SOLUTION?)?
+        second_line = self.linear_2.points(x_solution - 3, x_solution + 3) # ERROR
+
+        first_x, first_y, second_x, second_y = [], [], [], []
+
+        first_x.extend((first_line[0][0], first_line[-1][0]))
+        first_y.extend((first_line[0][1], first_line[-1][1]))
+
+        second_x.extend((second_line[0][0], second_line[-1][0]))
+        second_y.extend((second_line[0][1], second_line[-1][1]))
+
+        plt.plot(first_x, first_y)
+        plt.plot(second_x, second_y)
+
+        plt.plot([3, 3], [0, y_solution], 'r--')
+        plt.plot([0, x_solution], [y_solution, y_solution], 'r--')
+
+        plt.ylabel("Y = " + str(y_solution))
+        plt.xlabel("X = " + str(x_solution))
+
+        plt.show()
+
     compatible = property(is_compatible)
     solutions = property(get_number_of_solutions)
+
+
