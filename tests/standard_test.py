@@ -1,6 +1,8 @@
 from khwarizmi import linear, exc
 import unittest
 
+# 0.20 seconds to run.
+
 class SlopeInterceptTest(unittest.TestCase):
 
     def setUp(self):

@@ -1,6 +1,8 @@
 from khwarizmi import linear, exc
 import unittest
 
+# 0.21 seconds to run
+
 class SlopeInterceptTest(unittest.TestCase):
 
     def setUp(self):
@@ -63,10 +65,10 @@ class SlopeInterceptTest(unittest.TestCase):
 
     def test_solve(self):
         with self.assertRaises(exc.LinearSolutionError):
-            self.assertEqual(self.linear_1.solve())
-            self.assertEqual(self.linear_2.solve())
-            self.assertEqual(self.linear_3.solve())
-            self.assertEqual(self.linear_4.solve())
+            self.linear_1.solve()
+            self.linear_2.solve()
+            self.linear_3.solve()
+            self.linear_4.solve()
 
     def test_sort_for_x(self):
         self.assertEqual(self.linear_1.sort('x'), '(2*x+5)/1')

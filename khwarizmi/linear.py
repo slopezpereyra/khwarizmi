@@ -4,8 +4,8 @@ import matplotlib.pyplot as plt
 
 from khwarizmi.equations import Equation
 from khwarizmi.exc import (InvalidFormError, LinearSolutionError,
-                           RedundantConversionError, UnableToDefineFormError, UnsuitableSlopeInterceptForm)
-from khwarizmi.misc import if_assign, num
+                           RedundantConversionError, UnableToDefineFormError, UnsuitableSlopeInterceptForm, InfinitelySolutionsError)
+from khwarizmi.misc import if_assign, exc_assign, num
 
 
 class Linear(Equation):
@@ -26,14 +26,14 @@ class Linear(Equation):
         side = if_assign(self.form == 'Standard Form', self.equation, self.sol_side)
 
         if side[0] == '-':
-            x_mult = if_assign(side[1].isdigit(), self.get_number(side[1], 1, side), "1")
-            return '-' + x_mult
+            multiplier = if_assign(side[1].isdigit(), self.get_number(side[1], 1, side), "1")
+            return '-' + multiplier
         if side[0].isdigit():
-            x_mult = self.get_number(side[0], 0, side)
+            multiplier = self.get_number(side[0], 0, side)
         else:
-            x_mult = 1
+            multiplier = 1
 
-        return x_mult
+        return multiplier
 
     def get_y_multiplier(self):
         """Returns whatever number is multiplying the y variable on this equation"""
@@ -41,18 +41,18 @@ class Linear(Equation):
         eqtn, index = self.equation, self.equation.index('x') + 2
 
         if self.form == 'Standard Form':
-            y_mult = if_assign(eqtn[index].isdigit(), self.get_number(eqtn[index], index), "1")
+            multiplier = if_assign(eqtn[index].isdigit(), self.get_number(eqtn[index], index), "1")
 
             if eqtn[index - 1] == '-':
-                y_mult = '-' + y_mult
+                multiplier = '-' + multiplier
         else:
             if eqtn[0] == '-':
-                y_mult = if_assign(eqtn[1].isdigit(), self.get_number(eqtn[1], 1), "1")
-                y_mult = '-' + y_mult
+                multiplier = if_assign(eqtn[1].isdigit(), self.get_number(eqtn[1], 1), "1")
+                multiplier = '-' + multiplier
             else:
-                y_mult = if_assign(eqtn[0].isdigit(), self.get_number(eqtn[0], 0), "1")
+                multiplier = if_assign(eqtn[0].isdigit(), self.get_number(eqtn[0], 0), "1")
 
-        return y_mult
+        return multiplier
 
     def express_as(self, form):
         """Expresses the equation in the form passed as an argument
@@ -128,7 +128,7 @@ class Linear(Equation):
 
         y_label (str): label to describe the y axis (optional)
 
-        x_label (str): label to describe the x axis (optionl)"""
+        x_label (str): label to describe the x axis (optional)"""
 
         x, y = [], []
 
@@ -142,7 +142,7 @@ class Linear(Equation):
         plt.show()
 
     def solve(self, show=False):
-        """Overwriten solve() method inherited from Equation class
+        """Overwritten solve() method inherited from Equation class
         to raise error if used on Linear class."""
 
         raise LinearSolutionError()
@@ -214,6 +214,7 @@ class SlopeIntercept(Linear):
         return self.equation
 
     def warn_if_unsuitable(self):
+        """Raises an error on initialization if equation is not fit."""
 
         if self.equation[self.equation.find('x') - 1] == "(":
             raise UnsuitableSlopeInterceptForm(self.equation)
@@ -221,6 +222,7 @@ class SlopeIntercept(Linear):
             raise UnsuitableSlopeInterceptForm(self.equation)
 
     def sort_for_x(self):
+        """Sorts equation for x."""
 
         eqtn, sol_side, y_mult = self.equation, self.sol_side, self.y_mult
         x_index = eqtn.index('x')
@@ -235,6 +237,7 @@ class SlopeIntercept(Linear):
         return sol_side
 
     def sort_for_y(self):
+        """Sorts equation for y."""
 
         eqtn, sol_side = self.equation, self.sol_side
         x_index = eqtn.index('x')
@@ -298,6 +301,7 @@ class SlopeIntercept(Linear):
 
         # Express in Point-Slope form.
         if form == "Point-Slope":
+
             points = self.get_point(2)
             x_point, y_point = str(points[0]), str(points[1])
 
@@ -355,7 +359,7 @@ class Standard(Linear):
 
         form (str): the form the equation will be converted to"""
 
-        eqtn, slope = self.equation, str(self.slope)
+        slope = str(self.slope)
         forms = ["Slope-Intercept", "Point-Slope", "Standard"]
 
         if form not in forms:
@@ -364,23 +368,19 @@ class Standard(Linear):
             raise RedundantConversionError(form)
 
         if form == "Point-Slope":
+
             points = self.get_point(2)
             x_point, y_point = str(points[0]), str(points[1])
-
-            rewritten = "y-" + y_point + "=" + \
-                        slope + "(x-" + x_point + ")"
+            rewritten = "y-" + y_point + "=" + slope + "(x-" + x_point + ")"
 
             rewritten = Equation.beautify(rewritten)
-
             return PointSlope(rewritten)
 
         if form == "Slope-Intercept":
             operator = "+" if self.y_intercept > 0 else ""
-
             rewritten = "y=" + slope + "x" + operator + str(self.y_intercept)
 
             rewritten = Equation.beautify(rewritten)
-
             return SlopeIntercept(rewritten)
 
         return None
@@ -396,6 +396,7 @@ class PointSlope(Linear):
         return self.equation
 
     def sort_for_x(self):
+        """Sorts equation for x."""
 
         eqtn, y_index = self.equation, self.equation.index('y')
         x_index = eqtn.index('x')
@@ -418,6 +419,7 @@ class PointSlope(Linear):
         return sol_side
 
     def sort_for_y(self):
+        """Sorts equation for y."""
 
         # Required and convenient variables definition.
         eqtn, y_index = self.equation, self.equation.index('y')
@@ -466,7 +468,7 @@ class PointSlope(Linear):
 
         if form == 'Slope-Intercept':
 
-            operator = if_assign(self.y_intercept < 0, '-', '+')
+            operator = if_assign(self.y_intercept < 0, '', '+')
             rewritten = 'y=' + slope + "x" + operator + str(self.y_intercept)
 
             if '--' in rewritten:
@@ -492,26 +494,57 @@ class LinearSystem:
     """This class defines the Linear System object to work with
     systems of equations."""
 
-    def __init__(self, first, second):
-        self.first = first
-        self.second = second
+    def __init__(self, first_equation, second_equation):
+        self.linear_1 = self.convert(first_equation)
+        self.linear_2 = self.convert(second_equation)
 
-    def iscompatible(self):
+    def is_compatible(self):
         """Returns true if there's any value of x that equally satisfies
         both equations."""
 
-        return True if self.first.slope != self.second.slope else False
+        if self.linear_1.slope != self.linear_2.slope:
+            return True
+        elif self.linear_2.y_intercept == self.linear_1.y_intercept:
+            return True
 
-    def solutions(self):
+        return False
+
+    def get_number_of_solutions(self):
         """ Returns the number of solutions for this system
         of equations"""
 
-        if self.iscompatible() is True:
-            if self.first.points(1, 2) == self.second.points(1, 2):
+        if self.is_compatible() is True:
+            if self.linear_1.points(1, 2) == self.linear_2.points(1, 2):
                 return 'Infinitely many solutions'
 
             return 'One solution'
 
         return 'No solutions'
 
-print(Standard('5x + y = -15').y_intercept)
+    def convert(self, linear):
+        """Converts a linear equation to Slope-Intercept form if under other form."""
+        try:
+            return linear.express_as('Slope-Intercept')
+        except RedundantConversionError:
+            return linear
+
+    def solve(self):
+        """Returns the solution to this system of equation."""
+
+        if self.is_compatible() is False:
+            return None
+        if self.get_number_of_solutions() == 'Infinitely many solutions':
+            raise InfinitelySolutionsError
+
+        x_mult = str(num(self.linear_2.x_mult) - num(self.linear_1.x_mult))
+        x_mult = '' if x_mult == '1' else x_mult
+        equation = x_mult + 'x' + '=' + str(self.linear_1.y_intercept) + '-' + str(self.linear_2.y_intercept)
+
+        print("EQUATION ", equation)
+
+        x_value = Equation(equation).solve(True)
+
+        return self.linear_1.get_point(x_value)
+
+    compatible = property(is_compatible)
+    solutions = property(get_number_of_solutions)

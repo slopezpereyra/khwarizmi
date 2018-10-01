@@ -22,3 +22,9 @@ else returns if_false. Saves lines and ugly if-else use."""
 
     return if_true if condition else if_false
 
+def exc_assign(exception, on_try, on_except):
+
+    try:
+        return on_try
+    except exception:
+        return on_except

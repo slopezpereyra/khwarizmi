@@ -1,6 +1,7 @@
 """Defines an equation class and its functions."""
 
 from khwarizmi.exc import NoEqualityError, NoVariableError
+from khwarizmi.misc import num, if_assign
 
 operators = ["-", "+", "/", "*"]
 excused_symbols = ["/", "."]
@@ -148,6 +149,8 @@ class Equation (object):
 
         if number_pos > 0 and character not in operators:
             if full_number == self.inc_multiplier:
+                if self.inc_side[self.inc_mult_index - 1] == '-':
+                    return "/-"
                 return "/"
             elif self.inc_side[number_pos - 1] == "+":
                 return "-"
@@ -166,11 +169,9 @@ class Equation (object):
         if self.inc_multiplier is not "":
 
             op_index = self.sol_side.index("/")
-            high_operation = self.sol_side[op_index: op_index +
-                                           self.mult_length + 1]
-
-            self.sol_side = "(" + self.sol_side.replace(
-                high_operation, "") + ")" + high_operation
+            symbols_until_end = if_assign(self.sol_side[op_index + 1] == '-', 2, 1)
+            high_operation = self.sol_side[op_index: op_index + self.mult_length + symbols_until_end]
+            self.sol_side = "(" + self.sol_side.replace(high_operation, "") + ")" + high_operation
 
     def get_number(self, number, index, side=None):
         """Get's all the numbers that form a full number and returns the full
@@ -246,9 +247,7 @@ class Equation (object):
         # and divisiones are made over the whole expression and not a single
         # number, using parenthesis.
         # E.g., 25x-10 = 5--> x = (5+10)/25
-
         self.format_parenthesis()
-
         if get_unknown_side is True:
             return self.sol_side
 
@@ -262,10 +261,12 @@ class Equation (object):
 
         if show is True:
 
-            print("\n" + self.equation + "\n")
-            print("Sort:\n" + self.inc_side + " = " + self.sol_side + "\n")
-            print("Solve:\n" + self.incognito +
+            print("Equation\n" + self.equation + "\n")
+            print("Sorted:\n" + self.inc_side + " = " + self.sol_side + "\n")
+            print("Solved:\n" + self.incognito +
                   " = " + str(eval(self.sol_side)) + "\n")
 
-        return eval(self.sol_side)
+        return num(eval(self.sol_side))
 
+
+Equation('-3x=-6-5').solve()

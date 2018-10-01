@@ -115,3 +115,16 @@ class RedundantConversionError(ConversionError):
             self.form, self.form)
 
         return error_string
+
+
+class InfinitelySolutionsError(_EquationError):
+
+    def __init__(self):
+        super().__init__()
+
+    def __str__(self):
+        error_string = """You are requesting a solution for this system of equations
+                        and there's an infinite number of them."""
+
+        return error_string
+
