@@ -99,8 +99,10 @@ class Linear(Equation):
         b (int): last value of the iteration.
         """
 
-        solutions = []
+        if type(a) == float or type(b) == float:
+            a, b = int(round(a) - 1), int(round(b) + 1)
 
+        solutions = []
         for i in range(a, b + 1):
             solutions.append(tuple((i, self.solve_for("x", i))))
 
@@ -549,8 +551,8 @@ class LinearSystem:
         solution_point = self.solve()
         x_solution, y_solution = solution_point[0], solution_point[1]
 
-        first_line = self.linear_1.points(x_solution - 3, x_solution + 3) # ERROR : THIS TAKES POINTS SINCE X = X_SOLUTION TILL X!!! = Y SOLUTION?)?
-        second_line = self.linear_2.points(x_solution - 3, x_solution + 3) # ERROR
+        first_line = self.linear_1.points(x_solution - 3, x_solution + 3)
+        second_line = self.linear_2.points(x_solution - 3, x_solution + 3)
 
         first_x, first_y, second_x, second_y = [], [], [], []
 
@@ -563,9 +565,6 @@ class LinearSystem:
         plt.plot(first_x, first_y)
         plt.plot(second_x, second_y)
 
-        plt.plot([3, 3], [0, y_solution], 'r--')
-        plt.plot([0, x_solution], [y_solution, y_solution], 'r--')
-
         plt.ylabel("Y = " + str(y_solution))
         plt.xlabel("X = " + str(x_solution))
 
@@ -573,5 +572,3 @@ class LinearSystem:
 
     compatible = property(is_compatible)
     solutions = property(get_number_of_solutions)
-
-
