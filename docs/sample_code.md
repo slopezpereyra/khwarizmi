@@ -3,7 +3,7 @@
 Given the object `equation = SlopeIntercept('y = 2x + 5')`
 
     >>>equation.form
-    'Slope-Intercept Form
+    'Slope-Intercept Form'
     >>>equation.x_mult
     '2'
     >>>equation.y_mult
