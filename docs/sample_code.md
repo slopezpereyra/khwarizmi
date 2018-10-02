@@ -1,5 +1,9 @@
 # Sample code for Linear equations.
 
+This code was sampled using Python 3.6 IDLE after declaring
+
+    from khwarizmi import linear
+
 Given the object `equation = SlopeIntercept('y = 2x + 5')`
 
     >>>equation.form
