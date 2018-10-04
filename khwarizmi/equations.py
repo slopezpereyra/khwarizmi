@@ -2,6 +2,7 @@
 
 from khwarizmi.exc import NoEqualityError, NoVariableError
 from khwarizmi.misc import num, if_assign
+import copy
 
 OPERATORS = ["-", "+", "/", "*"]
 excused_symbols = ["/", "."]
@@ -26,7 +27,8 @@ class Equation (object):
     """
 
     def __init__(self, equation):
-        self.equation = equation.replace(" ", "")
+
+        self.equation = equation.replace(' ', '')
         self.sol_side = ""
         self.inc_side = ""
         self.get_sides()
@@ -34,7 +36,7 @@ class Equation (object):
         self.incognito = self.return_incognito()
         self.incognito_index = self.equation.index(self.incognito)
         self.mult_length = 0
-        self.inc_multiplier = self.return_inc_multiplier()
+        self.inc_multiplier = self.return_inc_multiplier(catch_negatives=True)
         self.inc_mult_index = self.incognito_index - self.mult_length
 
     def __str__(self):
@@ -75,20 +77,27 @@ class Equation (object):
 
         return incs
 
-    def return_inc_multiplier(self, inc_index=None, side=None):
+    def return_inc_multiplier(self, inc_index=None, side=None, catch_negatives=False):
         """Returns the incognito multiplier; i.e.  the number that multiplies the
         variable (if any)."""
 
         number = ""
         parser = 1
+        catcher = copy.copy(excused_symbols)
+
+        if catch_negatives is True:
+            catcher.append('-')
+
 
         index = self.incognito_index if inc_index is None else inc_index
-        inc_side = self.inc_side if side is None else side
+        side = self.inc_side if side is None else side
 
         # While there is a previous character and this character is a digit
         try:
-            while parser <= index and (inc_side[index - parser].isdigit() or inc_side[index - parser] in excused_symbols):
-                number = self.inc_side[self.incognito_index - parser] + number
+            while parser <= index and (side[index - parser].isdigit() or side[index - parser] in catcher):
+                number = side[index - parser] + number
+                if side[index - parser] == '-':
+                    break
                 parser += 1
 
             self.mult_length = len(number)
@@ -132,7 +141,7 @@ class Equation (object):
 
         return expression
 
-    def get_operator(self, number_pos, full_number):
+    def get_operator(self, number_pos, full_number, multiplier, inc_side=None):
         """Returns the operator to be used on a specific number to clear it
         from the side of the equation it is in. For example, for the equation
         2x+5=15, taking the number 5, it would return the - (minus) operator,
@@ -145,37 +154,40 @@ class Equation (object):
         check.
         full_number: the full number (not individual symbol) to be checked."""
 
-        character = self.inc_side[number_pos]
+        inc_side = self.inc_side if inc_side is None else inc_side
+
+        character = inc_side[number_pos]
 
         if number_pos > 0 and character not in OPERATORS:
-            if full_number == self.inc_multiplier:
-                if self.inc_side[self.inc_mult_index - 1] == '-':
+            if full_number == multiplier:
+                if inc_side[inc_side.find(multiplier) - 1] == '-':
                     return "/-"
                 return "/"
-            elif self.inc_side[number_pos - 1] == "+":
+            elif inc_side[number_pos - 1] == "+":
                 return "-"
             else:
                 return "+"
 
-        elif full_number == self.inc_multiplier:
+        if full_number == multiplier:
             return "/"
 
-        else:
-            return "-"
+        return "-"
 
-    def format_parenthesis(self):
+    def format_parenthesis(self, sol_side=None):
         """Formats parenthesis positions if required"""
 
-        if self.inc_multiplier is not "":
+        sol_side = self.sol_side if sol_side is None else sol_side
 
-            op_index = self.sol_side.index("/")
-            symbols_until_end = if_assign(self.sol_side[op_index + 1] == '-', 2, 1)
-            high_operation = self.sol_side[op_index: op_index + self.mult_length + symbols_until_end]
-            self.sol_side = "(" + self.sol_side.replace(high_operation, "") + ")" + high_operation
+        if self.inc_multiplier != '':
+            op_index = sol_side.rfind("/")
+            symbols_until_end = if_assign(sol_side[op_index + 1] == '-', 2, 1)
+            # str: slice of the sol_side from the '/' to the end.
+            high_operation = sol_side[op_index: op_index + self.mult_length + symbols_until_end]
+
+            return "(" + sol_side.replace(high_operation, "") + ")" + high_operation
 
     def get_number(self, number, index, side=None):
-        """Get's all the numbers that form a full number and returns the full
-        number.
+        """Returns the set of symbols that form a full number.
 
         Keyword Arguments:
 
@@ -204,7 +216,44 @@ class Equation (object):
 
         return number
 
-    def sort_equation(self, get_unknown_side=False):
+    def simplify_equation(self):
+
+        first_index = self.equation.find('x')
+        first_x = self.return_inc_multiplier(first_index, catch_negatives=True)
+        sol_side = self.sol_side
+
+        unknowns = [first_x]
+
+        if self.equation.count('x') > 1:
+            previous_index = first_index
+            for number in range(1, self.equation.count('x') + 1):
+                cur_index = self.equation.find('x', previous_index + 1)
+                unknowns.append(self.return_inc_multiplier(cur_index, self.equation, True))
+                previous_index = cur_index
+
+        if len(unknowns) > 2:
+            unknowns.pop()
+
+        counter = 0
+        for number in unknowns:
+
+            # Index this number on the solution side.
+            index = sol_side.find(number + 'x')
+            # Get replacement with its operator (if any).
+            replacement = if_assign(sol_side[index - 1] in OPERATORS, sol_side[index - 1] + number, number)
+            # Remove it from the solution side.
+            sol_side = sol_side.replace(replacement + 'x', '')
+
+            if number + 'x' in self.sol_side:
+                unknowns[counter] = '-' + number
+
+            counter += 1
+
+        unknowns = list(map(num, unknowns))
+
+        return str(sum(unknowns)) + 'x=' + sol_side
+
+    def sort_equation(self, get_unknown_side=False, show=False):
         """Sorts the equation, which is a very highschool, wrongly phrased
         way of saying that clears the incognito side by substracting all
         positive numbers, adding all negative numbers, dividing all multipliers
@@ -213,59 +262,68 @@ class Equation (object):
 
         index = 0
 
-        while len(self.inc_side) > 1:
-            symbol = self.inc_side[index]
+        # Local variables for the local, simplified version of the equation
+        # (not equal to self.equation).
+
+        equation = self.simplify_equation()
+        equal_sign = equation.index("=")
+        inc_side, sol_side = equation[0:equal_sign], equation[equal_sign + 1:]
+        simplified_multiplier = self.return_inc_multiplier(equation.find('x'), inc_side)
+
+        while len(inc_side) > 1:
+            symbol = inc_side[index]
             try:
                 if symbol.isdigit():
 
                     # Get the symbol (the full number) and its index.
 
-                    symbol = self.get_number(symbol, index, self.inc_side)
-                    previous_symbol = self.inc_side[index - 1]
-                    operator = self.get_operator(index, symbol)
+                    symbol = self.get_number(symbol, index, inc_side)
+                    previous_symbol = inc_side[index - 1]
+                    operator = self.get_operator(index, symbol, simplified_multiplier, inc_side)
 
                     # Pass the number from the incognito side of the equation to
                     # the solution side, with the proper operator...
 
-                    self.sol_side += operator + symbol
-                    self.inc_side = self.inc_side.replace(
+                    sol_side += operator + symbol
+                    inc_side = inc_side.replace(
                         symbol, "", 1)
                     if previous_symbol in OPERATORS:
                         # If there's an operator before this symbol, erase it.
 
-                        self.inc_side = self.inc_side.replace(
+                        inc_side = inc_side.replace(
                             previous_symbol, "", 1)
+
                     continue
 
                 index += 1
 
             except IndexError:
-
                 index = 0
+                continue
 
         # Format the solution side of the equation so that multiplications
-        # and divisiones are made over the whole expression and not a single
+        # and divisions are made over the whole expression and not a single
         # number, using parenthesis.
-        # E.g., 25x-10 = 5--> x = (5+10)/25
-        self.format_parenthesis()
-        if get_unknown_side is True:
-            return self.sol_side
 
-        return self.inc_side + " = " + self.sol_side
-
-    def solve(self, show=False):
-        """Evaluates  the algebraic expression.
-        If show is True, displays a step by step explanation."""
-
-        self.sort_equation()
+        sol_side = self.format_parenthesis(sol_side)
 
         if show is True:
 
             print("Equation\n" + self.equation + "\n")
-            print("Sorted:\n" + self.inc_side + " = " + self.sol_side + "\n")
+            print("Simplified\n" + equation + "\n")
+            print("Sorted:\n" + inc_side + " = " + sol_side + "\n")
             print("Solved:\n" + self.incognito +
-                  " = " + str(eval(self.sol_side)) + "\n")
+                  " = " + str(eval(sol_side)) + "\n")
 
-        return num(eval(self.sol_side))
+        if get_unknown_side is True:
+            return sol_side
+
+        return sol_side
+
+    def solve(self, show=False):
+        """Evaluates the algebraic expression.
+        If show is True, displays a step by step explanation."""
+
+        return num(eval(self.sort_equation(show=show)))
 
 

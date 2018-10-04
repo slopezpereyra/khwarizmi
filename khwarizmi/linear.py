@@ -5,13 +5,14 @@ import matplotlib.pyplot as plt
 from khwarizmi.equations import Equation
 from khwarizmi.exc import (InvalidFormError, LinearSolutionError,
                            RedundantConversionError, UnableToDefineFormError, UnsuitableSlopeInterceptForm, InfinitelySolutionsError)
-from khwarizmi.misc import if_assign, exc_assign, num
+from khwarizmi.misc import if_assign, num
 
 
 class Linear(Equation):
     """Base class for all linear equations."""
 
     def __init__(self, equation):
+
         Equation.__init__(self, equation)
         self.equal_index = self.equation.index("=")
         self.form = self.get_form()
@@ -572,3 +573,4 @@ class LinearSystem:
 
     compatible = property(is_compatible)
     solutions = property(get_number_of_solutions)
+
