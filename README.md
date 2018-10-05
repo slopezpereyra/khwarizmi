@@ -8,7 +8,7 @@ Did you ever think you'd be able to have this linear equation,
 
     y = 2025.34x - 724
 
-and get its solution when y equals 5 on Python? Now you can. In just two lines.
+and get its solution when y equals 5 on Python with a single function? Now you can. In just two lines.
     
     >>>equation = SlopeIntercept('y = 2025.34x - 724')
     >>>equation.solve_for('y', 5)
