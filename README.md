@@ -6,9 +6,7 @@ A simple library for efficiently solving basic algebraic expressions.
 
 This library works in a similar way an interpreter does. Its singularity is that what it interprets is a special kind of language: **algebra**. 
 
-It works with classes because algebraic properties are more similar to attributes of a thing than to variables or mere information. 
-
-This library is currently under active development. It can be used, but bugs and errors can be expected.
+It works with classes because algebraic properties can be represented as attributes of a thing far more consistently than as mere functional information.
 
 ## Requirements
 
@@ -28,7 +26,7 @@ Khwarizmi works by allowing you to treat your equations as instances of an algeb
 
 ## What can I do with it?
 
-On this Wiki you'll find everything you need to know to work with algebraic expressions using **khwarizmi**. Khwarizmi currently supports
+On the Wiki you'll find everything you need to know to work with algebraic expressions using **khwarizmi**. Khwarizmi currently supports
 
 - **Working with one-variable equations!**
 - **Working with linear equations (graphing, solving, refactoring!)**
