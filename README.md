@@ -4,9 +4,23 @@ A simple library for efficiently solving basic algebraic expressions.
 
 ## Brief intro
 
-This library works in a similar way an interpreter does. Its singularity is that what it interprets is a special kind of language: **algebra**. 
+Did you ever think you'd be able to have this linear equation,
 
-It works with classes because algebraic properties can be represented as attributes of a thing far more consistently than as mere functional information.
+    y = 2025.34x - 724
+
+and get its solution when y equals 5 on Python? Now you can. In just two lines.
+    
+    >>>equation = SlopeIntercept('y = 2025.34x - 724')
+    >>>equation.solve_for('y', 5)
+    0.3599395657025487
+
+Oh, it's like reading a poem... But how did I managed to do that?
+
+Well, this library works in a similar way an interpreter does. Its singularity is that what it interprets is a special kind of language: **algebra**. 
+
+Because algebraic properties can be represented as attributes of a thing far more consistently than as mere functional information, equations are treated as objects. Allowing you to treat your equations as instances of an algebraic class, it essentially lets you cast, from a simple string, a rich mathematical object with its own unique properties and methods, and operate with it afterwards. 
+
+Did I mention it all feels as beautiful as a fricking poem?
 
 ## Requirements
 
@@ -20,20 +34,11 @@ To install the library for Python 3 use pip on your terminal.
 
 You are good to go now!
 
-## How?
-
-Khwarizmi works by allowing you to treat your equations as instances of an algebraic class. Essentially, it lets you express your equations -simple strings- as rich algebraic objects with their own unique properties and methosd! It is fast, and it is simple. If you want to learn how to use it, check the Wiki and you'll be good to go in minutes!
-
 ## What can I do with it?
 
-On the Wiki you'll find everything you need to know to work with algebraic expressions using **khwarizmi**. Khwarizmi currently supports
+There are **tons of things** you can manage to easily pull off with khwarizmi. What khwarizmi does best is working with **linear equations**, but you can also solve **standard and quadratic equations** with it. **You can even solve systems of equations with it!**
 
-- **Working with one-variable equations!**
-- **Working with linear equations (graphing, solving, refactoring!)**
-- **Working with systems of equation (graphing and solving!)**
-- **Working with quadratic equations!**
-
-Please refer to the wiki pages to find more about how khwarizmi works.
+On the Wiki you'll find examples and basic instructions that will show you how khwarizmi works more interactively. Refer ot its pages for more information!
     
 
 
