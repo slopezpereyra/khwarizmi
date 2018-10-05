@@ -1,10 +1,39 @@
+# Sample code for Basic equations
+
+This code was sampled using Python 3.6 IDLE after declaring
+
+    from khwarizmi import equations
+
+Given the object `equation = equations.Equation('5x + 2x = 1245 - 3x + 125')` 
+
+    >>> equation.inc_side
+    '5x+2x'
+    >>> equation.sol_side
+    '1245-3x+125'
+    >>> equation.sort_equation()
+    '(1245+125)/10'
+    >>> equation.solve()
+    137
+    >>> equation.solve(True)
+    Equation
+    5x+2x=1245-3x+125
+
+    Simplified
+    10x=1245+125
+
+    Sorted:
+    x = (1245+125)/10
+
+    Solved:
+    x = 137.0
+
 # Sample code for Linear equations.
 
 This code was sampled using Python 3.6 IDLE after declaring
 
     from khwarizmi import linear
 
-Given the object `equation = SlopeIntercept('y = 2x + 5')`
+Given the object `equation = linear.SlopeIntercept('y = 2x + 5')`
 
     >>>equation.form
     'Slope-Intercept Form'
