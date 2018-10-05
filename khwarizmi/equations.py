@@ -10,21 +10,7 @@ excused_symbols = ["/", "."]
 
 class Equation (object):
 
-    """Base class for all specific equation types.
-
-    Attributes:
-
-    equation = the equation passed as parameter with all the spaces removed.
-    sol_side = the solution side of the equation.
-    inc_side = the incognito side of the equation.
-    incognitos = a list of all incognitos on this equation (for linear equations and others).
-    incognito = the specific incognito of this equation.
-    incognito_index = the index or rather position of the incognito on this equation.
-    mult_length = the length of the incognito multiplier.
-    inc_multiplier = the number that multiplies the incognito.
-    inc_mult_index = the index or rather position of the number that multiplies the incognito.
-
-    """
+    """Base class for all specific equation types."""
 
     def __init__(self, equation):
 
@@ -87,7 +73,6 @@ class Equation (object):
 
         if catch_negatives is True:
             catcher.append('-')
-
 
         index = self.incognito_index if inc_index is None else inc_index
         side = self.inc_side if side is None else side
@@ -246,6 +231,8 @@ class Equation (object):
 
             if number + 'x' in self.sol_side:
                 unknowns[counter] = '-' + number
+                if unknowns[counter].startswith('--'):
+                    unknowns[counter] = unknowns[counter].replace('--', '')
 
             counter += 1
 
@@ -253,7 +240,7 @@ class Equation (object):
 
         return str(sum(unknowns)) + 'x=' + sol_side
 
-    def sort_equation(self, get_unknown_side=False, show=False):
+    def sort_equation(self, show=False):
         """Sorts the equation, which is a very highschool, wrongly phrased
         way of saying that clears the incognito side by substracting all
         positive numbers, adding all negative numbers, dividing all multipliers
@@ -314,9 +301,6 @@ class Equation (object):
             print("Sorted:\n" + inc_side + " = " + sol_side + "\n")
             print("Solved:\n" + self.incognito +
                   " = " + str(eval(sol_side)) + "\n")
-
-        if get_unknown_side is True:
-            return sol_side
 
         return sol_side
 
