@@ -1,3 +1,7 @@
+# Sample code
+
+The code sampled on this document has the purpose of serving as an example. Not all the features of the package are included on it, nor any of it should be considered as a tutorial or any other kind of documentation.
+
 # Sample code for Basic equations
 
 This code was sampled using Python 3.6 IDLE after declaring
