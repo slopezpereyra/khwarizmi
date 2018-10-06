@@ -128,6 +128,9 @@ class Equation(object):
         if '+-' in expression:
             expression = expression.replace('+-', '-')
 
+        if '=+' in expression:
+            expression = expression.replace('=+', '=')
+
         expression = expression.replace('/+', '/')
 
         return expression
@@ -218,7 +221,8 @@ class Equation(object):
         except ValueError:
             unknown = ''
 
-        return unknown + self.unknown + '=' + sol_side
+        simplified = self.beautify(unknown + self.unknown + '=' + sol_side)
+        return simplified
 
     def sort_equation(self, show=False):
         """Sorts the equation, which is a very highschool, wrongly phrased
@@ -258,3 +262,4 @@ class Equation(object):
         If show is True, displays a step by step explanation."""
 
         return num(eval(self.sort_equation(show=show)))
+
