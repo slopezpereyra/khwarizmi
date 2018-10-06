@@ -29,16 +29,16 @@ class SlopeInterceptTest(unittest.TestCase):
         self.assertEqual(self.linear_4.form, 'Point-Slope Form')
 
     def test_x_mult(self):
-        self.assertEqual(self.linear_1.x_mult, '2')
-        self.assertEqual(self.linear_2.x_mult, '-3')
-        self.assertEqual(self.linear_3.x_mult, '10')
-        self.assertEqual(self.linear_4.x_mult, '1/2')
+        self.assertEqual(self.linear_1.x_coefficient, '2')
+        self.assertEqual(self.linear_2.x_coefficient, '-3')
+        self.assertEqual(self.linear_3.x_coefficient, '10')
+        self.assertEqual(self.linear_4.x_coefficient, '1/2')
 
     def test_y_mult(self):
-        self.assertEqual(self.linear_1.y_mult, '1')
-        self.assertEqual(self.linear_2.y_mult, '1')
-        self.assertEqual(self.linear_3.y_mult, '1')
-        self.assertEqual(self.linear_4.y_mult, '1')
+        self.assertEqual(self.linear_1.y_coefficient, '1')
+        self.assertEqual(self.linear_2.y_coefficient, '1')
+        self.assertEqual(self.linear_3.y_coefficient, '1')
+        self.assertEqual(self.linear_4.y_coefficient, '1')
 
     def test_slope(self):
         self.assertEqual(self.linear_1.slope, 2)
