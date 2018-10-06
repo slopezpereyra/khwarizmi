@@ -16,44 +16,44 @@ class Linear(Equation):
         Equation.__init__(self, equation)
         self.equal_index = self.equation.index("=")
         self.form = self.get_form()
-        self.x_mult = self.get_x_multiplier()
-        self.y_mult = self.get_y_multiplier()
+        self.x_coefficient = self.get_x_coefficient()
+        self.y_coefficient = self.get_y_coefficient()
         self.slope = self.get_slope()
         self.y_intercept = num(self.solve_for("x", 0))
 
-    def get_x_multiplier(self):
+    def get_x_coefficient(self):
         """Returns whatever number is multiplying the x variable on this equation as a string."""
 
         side = if_assign(self.form == 'Standard Form', self.equation, self.sol_side)
 
         if side[0] == '-':
-            multiplier = if_assign(side[1].isdigit(), self.get_number(side[1], 1, side), "1")
-            return '-' + multiplier
+            coefficient = if_assign(side[1].isdigit(), self.get_number(side[1], 1, side), "1")
+            return '-' + coefficient
         if side[0].isdigit():
-            multiplier = self.get_number(side[0], 0, side)
+            coefficient = self.get_number(side[0], 0, side)
         else:
-            multiplier = 1
+            coefficient = 1
 
-        return multiplier
+        return coefficient
 
-    def get_y_multiplier(self):
+    def get_y_coefficient(self):
         """Returns whatever number is multiplying the y variable on this equation"""
 
         eqtn, index = self.equation, self.equation.index('x') + 2
 
         if self.form == 'Standard Form':
-            multiplier = if_assign(eqtn[index].isdigit(), self.get_number(eqtn[index], index), "1")
+            coefficient = if_assign(eqtn[index].isdigit(), self.get_number(eqtn[index], index), "1")
 
             if eqtn[index - 1] == '-':
-                multiplier = '-' + multiplier
+                coefficient = '-' + coefficient
         else:
             if eqtn[0] == '-':
-                multiplier = if_assign(eqtn[1].isdigit(), self.get_number(eqtn[1], 1), "1")
-                multiplier = '-' + multiplier
+                coefficient = if_assign(eqtn[1].isdigit(), self.get_number(eqtn[1], 1), "1")
+                coefficient = '-' + coefficient
             else:
-                multiplier = if_assign(eqtn[0].isdigit(), self.get_number(eqtn[0], 0), "1")
+                coefficient = if_assign(eqtn[0].isdigit(), self.get_number(eqtn[0], 0), "1")
 
-        return multiplier
+        return coefficient
 
     def express_as(self, form):
         """Expresses the equation in the form passed as an argument
@@ -176,10 +176,10 @@ class Linear(Equation):
 
         sol_side: the side of the equation that was sorted (the solution side)."""
 
-        if variable is self.incognitos[0]:
-            inc = self.incognitos[1]
+        if variable is self.unknowns[0]:
+            inc = self.unknowns[1]
         else:
-            inc = self.incognitos[0]
+            inc = self.unknowns[0]
 
         print(inc + "=" + sol_side.replace(variable, value))
 
@@ -227,11 +227,11 @@ class SlopeIntercept(Linear):
     def sort_for_x(self):
         """Sorts equation for x."""
 
-        eqtn, sol_side, y_mult = self.equation, self.sol_side, self.y_mult
+        eqtn, sol_side, y_coefficient = self.equation, self.sol_side, self.y_coefficient
         x_index = eqtn.index('x')
 
         # Set the solution side
-        sol_side = "(" + sol_side + ")/" + y_mult
+        sol_side = "(" + sol_side + ")/" + y_coefficient
         # Add a * symbol before the x if there's a number before it.
         sol_side = if_assign(eqtn[x_index - 1].isdigit(), sol_side.replace('x', '*x'), sol_side)
         # Beautify the solution side.
@@ -247,7 +247,7 @@ class SlopeIntercept(Linear):
         operator = if_assign(eqtn[x_index + 1] == '-', '+', '-')
         slope_sign = if_assign(eqtn[0] == '-', '-', '')
 
-        sol_side = "(" + self.y_mult + "*y" + operator + \
+        sol_side = "(" + self.y_coefficient + "*y" + operator + \
                    str(self.y_intercept).replace('-', '') + ")/" + slope_sign + str(self.slope)
         sol_side = Equation.beautify(sol_side)
 
@@ -336,8 +336,11 @@ class Standard(Linear):
         # Required and convenient variables definition.
 
         eqtn = self.equation
-        c_pos, a, b = eqtn.find("=") + 1, self.x_mult, self.y_mult
+        print(eqtn)
+        c_pos, a, b = eqtn.find("=") + 1, self.x_coefficient, self.y_coefficient
+        print(c_pos, a, b)
         c = self.get_number(eqtn[c_pos], c_pos)
+        print(c)
         den = if_assign(for_variable == 'y', a, b)
         mult = if_assign(for_variable == 'y', b, a)
 
@@ -481,10 +484,10 @@ class PointSlope(Linear):
 
         if form == 'Standard':
             operator = if_assign(eqtn[0] == '-', '-', '+')
-            y_mult = if_assign(self.y_mult == '1', '', self.y_mult)
+            y_coefficient = if_assign(self.y_coefficient == '1', '', self.y_coefficient)
 
-            rewritten = '-' + self.x_mult + 'x' + operator + \
-                        y_mult + 'y' + '=' + str(self.y_intercept)
+            rewritten = '-' + self.x_coefficient + 'x' + operator + \
+                        y_coefficient + 'y' + '=' + str(self.y_intercept)
 
             rewritten = Equation.beautify(rewritten)
 
@@ -539,9 +542,9 @@ class LinearSystem:
         if self.get_number_of_solutions() == 'Infinitely many solutions':
             raise InfinitelySolutionsError
 
-        x_mult = str(num(self.linear_2.x_mult) - num(self.linear_1.x_mult))
-        x_mult = '' if x_mult == '1' else x_mult
-        equation = x_mult + 'x' + '=' + str(self.linear_1.y_intercept) + '-' + str(self.linear_2.y_intercept)
+        x_coefficient = str(num(self.linear_2.x_coefficient) - num(self.linear_1.x_coefficient))
+        x_coefficient = '' if x_coefficient == '1' else x_coefficient
+        equation = x_coefficient + 'x' + '=' + str(self.linear_1.y_intercept) + '-' + str(self.linear_2.y_intercept)
 
         x_value = Equation(equation).solve()
 
@@ -573,4 +576,3 @@ class LinearSystem:
 
     compatible = property(is_compatible)
     solutions = property(get_number_of_solutions)
-
