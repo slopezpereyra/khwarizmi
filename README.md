@@ -4,11 +4,14 @@ A simple library for efficiently solving basic algebraic expressions.
 
 ## Brief intro
 
-Did you ever think you'd be able to have this linear equation,
+This library works in a similar way an interpreter does. Its singularity is that what it interprets is a special kind of language: **algebra**.  
+
+It allows you to work with equations, like this one,
 
     y = 2025.34x - 724
 
-and get its solution when y equals 5 on Python with a single function? Now you can. In just two lines.
+and get their solutions, their linear properties, attributes and more. For example, the solution of this equation when y
+y equals 5 can be obtained. In just two lines <3 .
     
     >>>equation = SlopeIntercept('y = 2025.34x - 724')
     >>>equation.solve_for('y', 5)
@@ -16,11 +19,15 @@ and get its solution when y equals 5 on Python with a single function? Now you c
 
 Oh, it's like reading a poem... But how did I managed to do that?
 
-Well, this library works in a similar way an interpreter does. Its singularity is that what it interprets is a special kind of language: **algebra**. 
+Well, because algebraic properties can be represented as attributes of a thing far more consistently than as mere functional information, equations are treated as objects. Allowing you to treat your equations as instances of an algebraic class, this library essentially lets you cast, from a simple string, a rich mathematical object with its own unique properties and methods, and operate with it afterwards. 
 
-Because algebraic properties can be represented as attributes of a thing far more consistently than as mere functional information, equations are treated as objects. Allowing you to treat your equations as instances of an algebraic class, it essentially lets you cast, from a simple string, a rich mathematical object with its own unique properties and methods, and operate with it afterwards. 
+It's efficient, it's easy and it's beautiful.
 
-Did I mention it all feels as beautiful as a fricking poem?
+## What else can I do with it?
+
+There are **tons of things** you can manage to easily pull off with khwarizmi. What khwarizmi does best is working with **linear equations**; refactoring, solving and graphing them can be easily done. Apart from linear equations, you can work with **standard and quadratic equations** and even **solve and graph systems of equations**.
+
+On the Wiki you'll find reference pages from khwarizmi's modules. Refer ot its pages for more information, or dive into /docs/sample_code.md to see some examples of how khwarizmi actually looks like.
 
 ## Requirements
 
@@ -33,12 +40,6 @@ To install the library for Python 3 use pip on your terminal.
     pip3 install khwarizmi --user
 
 You are good to go now!
-
-## What can I do with it?
-
-There are **tons of things** you can manage to easily pull off with khwarizmi. What khwarizmi does best is working with **linear equations**, but you can also solve **standard and quadratic equations** with it. **You can even solve systems of equations with it!**
-
-On the Wiki you'll find examples and basic instructions that will show you how khwarizmi works more interactively. Refer ot its pages for more information!
     
 
 
