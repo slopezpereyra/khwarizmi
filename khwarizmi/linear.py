@@ -336,11 +336,8 @@ class Standard(Linear):
         # Required and convenient variables definition.
 
         eqtn = self.equation
-        print(eqtn)
         c_pos, a, b = eqtn.find("=") + 1, self.x_coefficient, self.y_coefficient
-        print(c_pos, a, b)
         c = self.get_number(eqtn[c_pos], c_pos)
-        print(c)
         den = if_assign(for_variable == 'y', a, b)
         mult = if_assign(for_variable == 'y', b, a)
 

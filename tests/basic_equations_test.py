@@ -14,11 +14,11 @@ class BasicEquationsTest(unittest.TestCase):
         self.equation_5 = equations.Equation('22y - 20y + 5 = -12 + 6 + 4y')
 
     def test_sorting_equation(self):
-        self.assertEqual(self.equation_1.sort_equation(), '(-6*5)/-3')
-        self.assertEqual(self.equation_2.sort_equation(), '(9+5)/3')
-        self.assertEqual(self.equation_3.sort_equation(), '(+5)/-1')
-        self.assertEqual(self.equation_4.sort_equation(), '(24/2)/4')
-        self.assertEqual(self.equation_5.sort_equation(), '(-12+6-5)/-2')
+        self.assertEqual(self.equation_1.sort(), '(-6*5)/-3')
+        self.assertEqual(self.equation_2.sort(), '(9+5)/3')
+        self.assertEqual(self.equation_3.sort(), '(5)/-1')
+        self.assertEqual(self.equation_4.sort(), '(24/2)/4')
+        self.assertEqual(self.equation_5.sort(), '(-12+6-5)/-2')
 
     def test_solution(self):
         self.assertEqual(self.equation_1.solve(), 10)

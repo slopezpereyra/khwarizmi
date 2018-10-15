@@ -224,7 +224,7 @@ class Equation(object):
         simplified = self.beautify(unknown + self.unknown + '=' + sol_side)
         return simplified
 
-    def sort_equation(self, show=False):
+    def sort(self, show=False):
         """Sorts the equation, which is a very highschool, wrongly phrased
         way of saying that clears the unknown side by substracting all
         positive numbers, adding all negative numbers, dividing all multipliers
@@ -261,5 +261,5 @@ class Equation(object):
         """Evaluates the algebraic expression.
         If show is True, displays a step by step explanation."""
 
-        return num(eval(self.sort_equation(show=show)))
+        return num(eval(self.sort(show=show)))
 
