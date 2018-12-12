@@ -1,4 +1,4 @@
-"""Useful and simple miscelaneous methods."""
+"""Useful and simple miscellaneous methods."""
 
 
 def num(value):

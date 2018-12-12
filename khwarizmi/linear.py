@@ -14,7 +14,6 @@ class Linear(Equation):
     def __init__(self, equation):
 
         Equation.__init__(self, equation)
-        self.equal_index = self.equation.index("=")
         self.form = self.get_form()
         self.x_coefficient = self.get_x_coefficient()
         self.y_coefficient = self.get_y_coefficient()
@@ -176,10 +175,10 @@ class Linear(Equation):
 
         sol_side: the side of the equation that was sorted (the solution side)."""
 
-        if variable is self.unknowns[0]:
-            inc = self.unknowns[1]
+        if variable is self.variables[0]:
+            inc = self.variables[1]
         else:
-            inc = self.unknowns[0]
+            inc = self.variables[0]
 
         print(inc + "=" + sol_side.replace(variable, value))
 
@@ -573,3 +572,6 @@ class LinearSystem:
 
     compatible = property(is_compatible)
     solutions = property(get_number_of_solutions)
+
+LINEAR = Linear("y = 2x + 5")
+print(LINEAR.solve_for("x", 5))
