@@ -1,29 +1,32 @@
 """Defines exceptions for this package."""
 
 
-class _EquationError (Exception):
+class _AlgebraicError (Exception):
 	"""Base class for all equation-related errors."""
 
 	def __init__(self):
 		pass
 
-class UnableToDefineFormError(_EquationError):
+
+class UnableToDefineFormError(_AlgebraicError):
 
 	def __init__(self, equation):
-		_EquationError.__init__(self)
+		_AlgebraicError.__init__(self)
 		self.equation = equation
 
 	def __str__(self):
 
 		error_string = """Khwarizmi was unable to define a form for {}.
-                        Your linear equation should be on Standard, 
-                        Slope-Intercept or Point-Slope form.""".format(self.equation)
+		Your linear equation should be on Standard,                 
+		Slope-Intercept or Point-Slope form.""".format(self.equation)
+
 		return error_string
 
-class NoVariableError (_EquationError):
+
+class NoVariableError (_AlgebraicError):
 
 	def __init__(self, equation):
-		_EquationError.__init__(self)
+		_AlgebraicError.__init__(self)
 		self.equation = equation
 
 	def __str__(self):
@@ -32,10 +35,10 @@ class NoVariableError (_EquationError):
 		return error_string
 
 
-class NoEqualityError (_EquationError):
+class NoEqualityError (_AlgebraicError):
 
 	def __init__(self, equation):
-		_EquationError.__init__(self)
+		_AlgebraicError.__init__(self)
 		self.equation = equation
 
 	def __str__(self):
@@ -44,10 +47,10 @@ class NoEqualityError (_EquationError):
 		return error_string
 
 
-class LinearSolutionError (_EquationError):
+class LinearSolutionError (_AlgebraicError):
 
 	def __init__(self):
-		_EquationError.__init__(self)
+		_AlgebraicError.__init__(self)
 
 	def __str__(self):
 		error_string = ("You can not evaluate a linear equation without providing"
@@ -56,43 +59,43 @@ class LinearSolutionError (_EquationError):
 		return error_string
 
 
-class UnsuitableSlopeInterceptForm(_EquationError):
+class UnsuitableSlopeInterceptForm(_AlgebraicError):
 
 	def __init__(self, equation):
-		_EquationError.__init__(self)
+		_AlgebraicError.__init__(self)
 		self.equation = equation
 
 	def __str__(self):
-		error_string = """This Slope-Intercept equation {} is unsuitable, probably
-                        because y is multiplied by some value n or you are multiplying 
-                        the whole solution side by some value m. If your equation looks like
-                        y = m (x + i) or ny = x + i, write the equation with the value m or n
-                        distributed to form a pure Slope-Intercept equation.""".format(self.equation)
+		error_string = """This Slope-Intercept equation {} is unsuitable, probably                        
+						because y is multiplied by some value n or you are multiplying 
+						the whole solution side by some value m. If your equation looks like
+						y = m (x + i) or ny = x + i, write the equation with the value m or n
+						distributed to form a pure Slope-Intercept equation.""".format(self.equation)
 		return error_string
 
 
-class NegativeSquareError(_EquationError):
+class NegativeSquareError(_AlgebraicError):
 
 	def __init__(self):
-		_EquationError.__init__(self)
+		_AlgebraicError.__init__(self)
 
 	def __str__(self):
-		error_string = ("This quadratic equation has a negative square"
-						" and can't be solved.")
+		error_string = """"This quadratic equation has a negative square
+						and can't be solved."""
 
 		return error_string
 
 
-class ConversionError(_EquationError):
+class ConversionError(_AlgebraicError):
 
 	def __init__(self):
-		_EquationError.__init__(self)
+		_AlgebraicError.__init__(self)
 		pass
 
 
 class InvalidFormError(ConversionError):
 	def __init__(self, form, forms):
-		_EquationError.__init__(self)
+		_AlgebraicError.__init__(self)
 		self.form = form
 		self.forms = forms
 
@@ -117,14 +120,28 @@ class RedundantConversionError(ConversionError):
 		return error_string
 
 
-class InfinitelySolutionsError(_EquationError):
+class InfinitelySolutionsError(_AlgebraicError):
 
 	def __init__(self):
 		super().__init__()
 
 	def __str__(self):
 		error_string = """You are requesting a solution for this system of equations
-                        and there's an infinite number of them."""
+						and there's an infinite number of them."""
 
 		return error_string
 
+
+class InvalidOperationError(_AlgebraicError):
+
+	def __init__(self, a, b):
+		super().__init__()
+		self.a = a
+		self.b = b
+
+	def __str__(self):
+		error_string = """Failed to perform operation between {} and {}.
+						It is likely that {} and/or {} are not of the type
+						required by the operation.""".format(self.a, self.b, self.a, self.b)
+
+		return error_string

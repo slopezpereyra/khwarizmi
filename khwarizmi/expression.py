@@ -16,8 +16,8 @@ class Expression:
 		self.terms = self.get_terms()
 
 	def get_variables(self):
-		"""Adds every unknown of the equation
-		to the unknowns attribute (list)."""
+		"""Adds every variable of the equation
+		to the variables attribute (list)."""
 
 		index, incs = 0, []
 		for symbol in self.expression:
@@ -27,7 +27,7 @@ class Expression:
 
 		return incs
 
-	def get_number(self, number, index, side=None, catch_negatives=False, catch_variable=False):
+	def get_number(self, number, index, side=None, catch_negatives=False, catch_variable=False, catch_power=False):
 		"""Returns the set of symbols that form a full number.
 
 		Keyword Arguments:
@@ -44,14 +44,22 @@ class Expression:
 		if catch_negatives is True:
 			catcher.append('-')
 		if catch_variable is True:
-			catcher.append(self.unknown)
+			catcher.extend(self.variables)
+		if catch_power is True:
+			catcher.append("*")
 
 		if len(side) > index + parser:
 			if side[index + 1] == "=" and side[index].isdigit():
 				return number
 
 			while side[index + parser].isdigit() or side[index + parser] in catcher:
-				number += side[index + parser]
+				if side[index + parser] == '*':
+					if side[index + parser + 1] == '*':
+						number += side[index + parser:index + parser + 1]
+					else:
+						number += side[index + parser]
+				else:
+					number += side[index + parser]
 
 				if index + parser + 1 < len(side):
 					parser += 1
@@ -64,7 +72,7 @@ class Expression:
 			return number
 		return None
 
-	def get_terms(self, side=None):
+	def get_terms(self, side=None, catch_powers=True, catch_negatives=False):
 		"""Returns a list of all terms of this equation."""
 
 		side = self.expression if side is None else side
@@ -72,7 +80,7 @@ class Expression:
 
 		while index < len(side):
 
-			term = self.get_number(side[index], index, catch_variable=True)
+			term = self.get_number(side[index], index, catch_negatives=catch_negatives, catch_variable=True, catch_power=catch_powers)
 			terms.append(term)
 
 			try:
@@ -90,6 +98,12 @@ class Expression:
 		number, parser = "", 1
 		catcher = copy.copy(excused_symbols)
 		catcher.append('-')
+
+		# This variables are provided with values other than None when called on
+		# this class, from parameters.
+		# Parameters are only None when this is called on Equation class,
+		# where unknown_index, coefficient_length and inc_side variables
+		# aren't meaningless.
 
 		index = self.unknown_index if unknown_index is None else unknown_index
 		side = self.inc_side if side is None else side
@@ -147,7 +161,3 @@ class Expression:
 		return expression
 
 
-EXPR = Expression("2x - 5z + 9q + 7 + 4")
-print(EXPR.expression)
-print(EXPR.variables)
-print(EXPR.coefficients)

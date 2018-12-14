@@ -142,5 +142,3 @@ class Equation(Expression):
 		return num(eval(self.sort(show=show)))
 
 
-EQUATION = Equation("2x + 5 = 9 - 3x")
-EQUATION.solve(True)

@@ -2,6 +2,7 @@
 
 import matplotlib.pyplot as plt
 
+from khwarizmi.expression import  Expression
 from khwarizmi.equations import Equation
 from khwarizmi.exc import (InvalidFormError, LinearSolutionError,
 						   RedundantConversionError, UnableToDefineFormError, UnsuitableSlopeInterceptForm, InfinitelySolutionsError)
@@ -234,7 +235,7 @@ class SlopeIntercept(Linear):
 		# Add a * symbol before the x if there's a number before it.
 		sol_side = if_assign(eqtn[x_index - 1].isdigit(), sol_side.replace('x', '*x'), sol_side)
 		# Beautify the solution side.
-		sol_side = Equation.beautify(sol_side)
+		sol_side = Expression.beautify(sol_side)
 
 		return sol_side
 
@@ -248,7 +249,7 @@ class SlopeIntercept(Linear):
 
 		sol_side = "(" + self.y_coefficient + "*y" + operator + \
 				   str(self.y_intercept).replace('-', '') + ")/" + slope_sign + str(self.slope)
-		sol_side = Equation.beautify(sol_side)
+		sol_side = Expression.beautify(sol_side)
 
 		return sol_side
 
@@ -297,7 +298,7 @@ class SlopeIntercept(Linear):
 			# be distributed. Hence why '+' is the operator before 'y'.
 
 			rewritten = x_op + slope + "x" + '+' + "y" + "=" + y_intercept
-			rewritten = Equation.beautify(rewritten)
+			rewritten = Expression.beautify(rewritten)
 
 			return Standard(rewritten)
 
@@ -308,7 +309,7 @@ class SlopeIntercept(Linear):
 			x_point, y_point = str(points[0]), str(points[1])
 
 			rewritten = "y-" + y_point + "=" + slope + "(x-" + x_point + ")"
-			rewritten = Equation.beautify(rewritten)
+			rewritten = Expression.beautify(rewritten)
 
 			return PointSlope(rewritten)
 
@@ -348,7 +349,7 @@ class Standard(Linear):
 		# Expressing
 
 		sol_side = "(" + c + operator + mult + "*" + for_variable + ")" + "/" + den
-		sol_side = Equation.beautify(sol_side)
+		sol_side = Expression.beautify(sol_side)
 
 		return sol_side
 
@@ -375,14 +376,14 @@ class Standard(Linear):
 			x_point, y_point = str(points[0]), str(points[1])
 			rewritten = "y-" + y_point + "=" + slope + "(x-" + x_point + ")"
 
-			rewritten = Equation.beautify(rewritten)
+			rewritten = Expression.beautify(rewritten)
 			return PointSlope(rewritten)
 
 		if form == "Slope-Intercept":
 			operator = "+" if self.y_intercept > 0 else ""
 			rewritten = "y=" + slope + "x" + operator + str(self.y_intercept)
 
-			rewritten = Equation.beautify(rewritten)
+			rewritten = Expression.beautify(rewritten)
 			return SlopeIntercept(rewritten)
 
 		return None
@@ -416,7 +417,7 @@ class PointSlope(Linear):
 		second_op = eqtn[x_index + 1]
 
 		sol_side = slope + "*(x" + second_op + x_point + ")" + first_op + y_point
-		sol_side = Equation.beautify(sol_side)
+		sol_side = Expression.beautify(sol_side)
 
 		return sol_side
 
@@ -434,7 +435,7 @@ class PointSlope(Linear):
 		sol_side = "(y" + eqtn[y_index + 1] + y_point + "-" + str(self.slope) + \
 				   "*" + x_point_op + x_point + ")/" + str(self.slope)
 
-		sol_side = Equation.beautify(sol_side)
+		sol_side = Expression.beautify(sol_side)
 		return sol_side
 
 	def sort(self, for_variable):
@@ -485,7 +486,7 @@ class PointSlope(Linear):
 			rewritten = '-' + self.x_coefficient + 'x' + operator + \
 						y_coefficient + 'y' + '=' + str(self.y_intercept)
 
-			rewritten = Equation.beautify(rewritten)
+			rewritten = Expression.beautify(rewritten)
 
 			return Standard(rewritten)
 
@@ -572,6 +573,3 @@ class LinearSystem:
 
 	compatible = property(is_compatible)
 	solutions = property(get_number_of_solutions)
-
-LINEAR = Linear("y = 2x + 5")
-print(LINEAR.solve_for("x", 5))
