@@ -32,7 +32,7 @@ class Expression:
 
 		return incs
 
-	def get_number(self, index, expression=None, catch_variable=False, catch_powers=False, catch_term=False):
+	def get_number(self, index, expression=None, catch_variable=False, catch_term=False):
 
 		expression = self.expression if expression is None else expression
 		catcher = copy.copy(SEPARATORS)
@@ -43,8 +43,6 @@ class Expression:
 
 		if catch_variable is False:
 			catcher.extend(self.variables)
-		if catch_powers is True:
-			catcher.append("**")
 		if catch_term is True:
 			catcher.remove('*')
 
@@ -65,14 +63,14 @@ class Expression:
 
 		return number if is_negative is False else '-' + number
 
-	def get_terms(self, side=None, catch_powers=True):
+	def get_terms(self, side=None):
 		"""Returns a list of all terms of this equation."""
 
 		side = self.expression if side is None else side
 		index, terms = 0, []
 
 		while index < len(side):
-			term = self.get_number(index, side, catch_variable=True, catch_powers=catch_powers, catch_term=True)
+			term = self.get_number(index, side, catch_term=True)
 			if len(term) > 0:
 				terms.append(term)
 			index += len(term) if len(term) > 0 else 1
@@ -84,8 +82,10 @@ class Expression:
 
 		for term in self.terms:
 			if any(char.isalpha() for char in term):
-				coefficients.append(self.get_number(0, term))
-
+				coefficient = self.get_number(0, term)
+				coefficient = if_assign(coefficient is '', '1', coefficient)
+				coefficient = if_assign(coefficient is '-', '-1', coefficient)
+				coefficients.append(coefficient)
 		return coefficients
 
 	@staticmethod
@@ -115,4 +115,3 @@ class Expression:
 
 EXPR = Expression("22x*5x-92 = -42x")
 SECOND = Expression("1/2x + 6 - 2y = 4")
-print(SECOND.terms)
