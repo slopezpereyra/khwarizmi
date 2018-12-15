@@ -29,10 +29,10 @@ class BasicEquationsTest(unittest.TestCase):
 
     def test_inc_multipplier(self):
         self.assertEqual(self.equation_1.coefficient, "-3")
-        self.assertEqual(self.equation_2.coefficient, "8")
-        self.assertEqual(self.equation_3.coefficient, "2")
+        self.assertEqual(self.equation_2.coefficient, "3")
+        self.assertEqual(self.equation_3.coefficient, "-1")
         self.assertEqual(self.equation_4.coefficient, "4")
-        self.assertEqual(self.equation_5.coefficient, "22")
+        self.assertEqual(self.equation_5.coefficient, "-2")
 
     def test_errors(self):
         with self.assertRaises(NoEqualityError):

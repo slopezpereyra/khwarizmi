@@ -27,10 +27,10 @@ class Linear(Equation):
 		side = if_assign(self.form == 'Standard Form', self.equation, self.sol_side)
 
 		if side[0] == '-':
-			coefficient = if_assign(side[1].isdigit(), self.get_number(side[1], 1, side), "1")
+			coefficient = if_assign(side[1].isdigit(), self.get_number(1, side), "1")
 			return '-' + coefficient
 		if side[0].isdigit():
-			coefficient = self.get_number(side[0], 0, side)
+			coefficient = self.get_number(0, side)
 		else:
 			coefficient = 1
 
@@ -42,16 +42,16 @@ class Linear(Equation):
 		eqtn, index = self.equation, self.equation.index('x') + 2
 
 		if self.form == 'Standard Form':
-			coefficient = if_assign(eqtn[index].isdigit(), self.get_number(eqtn[index], index), "1")
+			coefficient = if_assign(eqtn[index].isdigit(), self.get_number(index, eqtn), "1")
 
 			if eqtn[index - 1] == '-':
 				coefficient = '-' + coefficient
 		else:
 			if eqtn[0] == '-':
-				coefficient = if_assign(eqtn[1].isdigit(), self.get_number(eqtn[1], 1), "1")
+				coefficient = if_assign(eqtn[1].isdigit(), self.get_number(1, eqtn), "1")
 				coefficient = '-' + coefficient
 			else:
-				coefficient = if_assign(eqtn[0].isdigit(), self.get_number(eqtn[0], 0), "1")
+				coefficient = if_assign(eqtn[0].isdigit(), self.get_number(0, eqtn), "1")
 
 		return coefficient
 
@@ -195,6 +195,8 @@ class Linear(Equation):
 		eqtn, value = self.equation, str(value)
 		sol_side = self.sort(variable)
 
+		print("INSPECT: ", sol_side)
+
 		if eqtn[eqtn.find(variable) - 1] == "(" and self.form != "Point-Slope Form":
 			eqtn = eqtn.replace("(" + variable, "*(" + variable)
 			sol_side = eqtn[eqtn.find("=") + 1:]
@@ -337,7 +339,7 @@ class Standard(Linear):
 
 		eqtn = self.equation
 		c_pos, a, b = eqtn.find("=") + 1, self.x_coefficient, self.y_coefficient
-		c = self.get_number(eqtn[c_pos], c_pos)
+		c = self.get_number(c_pos, eqtn)
 		den = if_assign(for_variable == 'y', a, b)
 		mult = if_assign(for_variable == 'y', b, a)
 
@@ -403,15 +405,16 @@ class PointSlope(Linear):
 
 		eqtn, y_index = self.equation, self.equation.index('y')
 		x_index = eqtn.index('x')
-		y_point = self.get_number(eqtn[y_index + 2], y_index + 2, eqtn)
-		x_point = self.get_number(eqtn[x_index + 2], x_index + 2, eqtn)
+		y_point = self.get_number(y_index + 2, eqtn)
+		x_point = self.get_number(x_index + 2, eqtn)
 
 		slope_pos = self.equal_index + 1
 
 		# Gets the slope instead of using self.slope because this method is called
 		# before defining (and to define) the slope attribute.
 
-		slope = self.get_number(eqtn[slope_pos], slope_pos, eqtn)
+		slope = self.get_number(slope_pos, eqtn)
+		print("SLOPE IS ", slope)
 
 		first_op = if_assign(eqtn[y_index + 1] == '-', '+', '-')
 		second_op = eqtn[x_index + 1]
@@ -427,8 +430,8 @@ class PointSlope(Linear):
 		# Required and convenient variables definition.
 		eqtn, y_index = self.equation, self.equation.index('y')
 		x_index = eqtn.index('x')
-		y_point = self.get_number(eqtn[y_index + 2], y_index + 2, eqtn)
-		x_point = self.get_number(eqtn[x_index + 2], x_index + 2, eqtn)
+		y_point = self.get_number(y_index + 2, eqtn)
+		x_point = self.get_number(x_index + 2, eqtn)
 		x_point_op = if_assign(eqtn[x_index + 1] == '-', '-', '+')
 
 		# Expression
@@ -573,3 +576,7 @@ class LinearSystem:
 
 	compatible = property(is_compatible)
 	solutions = property(get_number_of_solutions)
+
+
+LINEAR = PointSlope("y - 4 = 2(x - 2")
+#LINEAR.solve_for('x', 2, True)

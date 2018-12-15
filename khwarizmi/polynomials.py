@@ -2,10 +2,11 @@
 
 from khwarizmi.expression import Expression
 from khwarizmi.exc import InvalidOperationError
-from khwarizmi.misc import if_assign
+from khwarizmi.misc import if_assign, is_number
 
 
 class Polynomial(Expression):
+
 	"""Base class for all polynomial expressions."""
 
 	def __init__(self, polynomial, name=None):
@@ -26,7 +27,9 @@ class Polynomial(Expression):
 		return self.polynomial
 
 	def get_degrees(self):
+
 		"""Returns all degrees of all terms of this polynomial."""
+
 		last_power_index = 0
 		power_count = self.polynomial.count("**")
 		powers = []
@@ -39,23 +42,19 @@ class Polynomial(Expression):
 		return sorted(powers, reverse=True)
 
 	def get_primary_coefficient(self):
+
 		"""Returns the primary coefficient of this polynomial."""
 
-		counter = 0
-		for coefficient in self.coefficients:
-			if self.terms[counter].startswith(coefficient) and self.terms[counter].endswith("**" + self.degree):
-				return coefficient
-			counter += 1
+		coefficient = next(num for num in self.terms if num.endswith(self.degree))
+		var_index = coefficient.find(next(var for var in coefficient if var.isalpha()))
+		return coefficient[:var_index]
 
 	def get_non_coefficient_term(self):
-		for term in self.terms:
-			if any(char.isalpha() for char in term):
-				continue
-			return term
 
-		return 0
+		return next((term for term in self.terms if is_number(term)), "0")
 
 	def reorder_terms(self):
+
 		"""Reorders the terms of the polynomial; higher degrees first."""
 
 		reordered = ""
@@ -76,6 +75,8 @@ class Polynomial(Expression):
 
 	def get_terms_by_degree(self):
 
+		"""Returns a dictionary where each term is paired to a degree key."""
+
 		terms_by_degree = {}
 
 		for degree in self.degrees:
@@ -92,6 +93,7 @@ class Polynomial(Expression):
 
 
 class PolynomialOperation:
+
 	"""Class holding static methods involving polynomial operations."""
 
 	def __init__(self, p, q):
@@ -100,7 +102,8 @@ class PolynomialOperation:
 
 	@staticmethod
 	def addition(p, q, name):
-		"""Performs the addition of two polynomials."""
+
+		"""Performs the addition of two polynomials and returns the resultant polynomial."""
 
 		if not isinstance(p, Polynomial) or not isinstance(q, Polynomial):
 			raise InvalidOperationError(p, q)
@@ -150,7 +153,12 @@ class PolynomialOperation:
 Px = Polynomial("2x**3 - 5x**2 - 3x**4 + 7x**5 - 2 + 6x**9", "P(x)")
 Qx = Polynomial("3x**3 - 4x**2 + 6x**5 + 5 + 3x**9", "Q(x)")
 
+
+print(Px.terms)
+print("LOOK ", Px.non_coefficient_term, " ", Qx.non_coefficient_term)
+
 print(Px.terms_by_degree)
+
 
 print(Px)
 print(Qx)

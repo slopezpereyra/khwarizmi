@@ -30,21 +30,21 @@ class Quadratic(equations.Equation):
 		equation = self.equation
 
 		if equation[0].isdigit():
-			a = self.get_number(equation[0], 0, equation)
+			a = self.get_number(0, equation)
 			symbols["a"] = float(a)
 
 		# Returns the first symbol after the first plus sign.
 		b_index = equation.find("+") + 1
 
 		if equation[b_index].isdigit():
-			b = self.get_number(equation[b_index], b_index, equation)
+			b = self.get_number(b_index, equation)
 			symbols["b"] = float(b)
 
 		# Returns the first symbol after the second plus sign.
 		c_index = equation.find("+", b_index + 1) + 1
 
 		if equation[c_index].isdigit():
-			c = self.get_number(equation[c_index], c_index, equation)
+			c = self.get_number(c_index, equation)
 			symbols["c"] = float(c)
 
 		return symbols

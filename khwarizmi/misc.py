@@ -14,6 +14,16 @@ def num(value):
 	else:
 		return int(value)
 
+def is_number(string):
+	"""Returns true if the string is representing a number"""
+
+	if string.isdigit():
+		return True
+
+	if string.startswith('-') and string[1:].isdigit():
+		return True
+
+	return False
 
 def if_assign(condition, if_true, if_false):
 	"""Method for conditional assignments.

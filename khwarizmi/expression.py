@@ -1,8 +1,10 @@
 """Basic expressions"""
 
-from khwarizmi.misc import if_assign
+from khwarizmi.misc import if_assign, is_number
+from khwarizmi.exc import NoVariableError
 import copy
 
+SEPARATORS = ['+', '-', '=', '*', "(", ")"]
 excused_symbols = ["/", "."]
 
 
@@ -12,8 +14,8 @@ class Expression:
 		self.expression = expression.replace(' ', '')
 		self.variables = self.get_variables()
 		self.unknown = self.variables[0]
-		self.coefficients = self.get_coefficients()
 		self.terms = self.get_terms()
+		self.coefficients = self.get_coefficients()
 
 	def get_variables(self):
 		"""Adds every variable of the equation
@@ -25,116 +27,66 @@ class Expression:
 			if symbol.isalpha() and symbol not in incs:
 				incs.append(symbol)
 
+		if len(incs) is 0:
+			raise NoVariableError(self.expression)
+
 		return incs
 
-	def get_number(self, number, index, side=None, catch_negatives=False, catch_variable=False, catch_power=False):
-		"""Returns the set of symbols that form a full number.
+	def get_number(self, index, expression=None, catch_variable=False, catch_powers=False, catch_term=False):
 
-		Keyword Arguments:
+		expression = self.expression if expression is None else expression
+		catcher = copy.copy(SEPARATORS)
+		is_negative = False
 
-		number -- first number to which append following numbers
-		index -- index of the number being initially parsed, which is number
-		side -- side of the equation to parse (by default it parses the whole
-		equation)"""
+		if catch_term is True and catch_variable is False:
+			catch_variable = True
 
-		side = side if side is not None else self.expression
-		catcher = copy.copy(excused_symbols)
-		parser = 1
-
-		if catch_negatives is True:
-			catcher.append('-')
-		if catch_variable is True:
+		if catch_variable is False:
 			catcher.extend(self.variables)
-		if catch_power is True:
-			catcher.append("*")
+		if catch_powers is True:
+			catcher.append("**")
+		if catch_term is True:
+			catcher.remove('*')
 
-		if len(side) > index + parser:
-			if side[index + 1] == "=" and side[index].isdigit():
-				return number
+		expression = expression[index:]
+		if expression.startswith('-'):
+			is_negative = True
+			expression = expression[1:]
 
-			while side[index + parser].isdigit() or side[index + parser] in catcher:
-				if side[index + parser] == '*':
-					if side[index + parser + 1] == '*':
-						number += side[index + parser:index + parser + 1]
-					else:
-						number += side[index + parser]
-				else:
-					number += side[index + parser]
+		if any(x in catcher for x in expression):
+			separator = next((x for x in expression if x in catcher))
+			pos = expression.find(separator)
+			if expression[0:pos] is "" and is_number(expression[0:pos+1]):
+				number = expression[0:pos+1]
+			else:
+				number = expression[0:pos]
+		else:
+			number = expression
 
-				if index + parser + 1 < len(side):
-					parser += 1
-				else:
-					return number
+		return number if is_negative is False else '-' + number
 
-			return number
-
-		if number.isdigit():
-			return number
-		return None
-
-	def get_terms(self, side=None, catch_powers=True, catch_negatives=False):
+	def get_terms(self, side=None, catch_powers=True):
 		"""Returns a list of all terms of this equation."""
 
 		side = self.expression if side is None else side
 		index, terms = 0, []
 
 		while index < len(side):
-
-			term = self.get_number(side[index], index, catch_negatives=catch_negatives, catch_variable=True, catch_power=catch_powers)
-			terms.append(term)
-
-			try:
-				index += len(term)
-				index = if_assign(side[index] == '-', index, index + 1)
-			except (TypeError, IndexError):
-				index += 1
-
+			term = self.get_number(index, side, catch_variable=True, catch_powers=catch_powers, catch_term=True)
+			if len(term) > 0:
+				terms.append(term)
+			index += len(term) if len(term) > 0 else 1
 		return terms
 
-	def get_coefficient(self, unknown_index=None, side=None):
-		"""Returns the unknown's coefficient; i.e.  the number that multiplies the
-		unknown (if any)."""
+	def get_coefficients(self):
 
-		number, parser = "", 1
-		catcher = copy.copy(excused_symbols)
-		catcher.append('-')
+		coefficients = []
 
-		# This variables are provided with values other than None when called on
-		# this class, from parameters.
-		# Parameters are only None when this is called on Equation class,
-		# where unknown_index, coefficient_length and inc_side variables
-		# aren't meaningless.
+		for term in self.terms:
+			if any(char.isalpha() for char in term):
+				coefficients.append(self.get_number(0, term))
 
-		index = self.unknown_index if unknown_index is None else unknown_index
-		side = self.inc_side if side is None else side
-
-		# While there is a previous character and this character is a digit
-		try:
-			while parser <= index and (side[index - parser].isdigit() or side[index - parser] in catcher):
-				number = side[index - parser] + number
-				if side[index - parser] == '-':
-					break
-				parser += 1
-
-			self.coefficient_length = len(number)
-			return number
-
-		except IndexError:
-			return number
-
-	def get_coefficients(self, first_index=0):
-
-		previous_index = first_index
-		unknowns = []
-
-		for variable in self.variables:
-			for number in range(1, self.expression.count(variable) + 1):
-				cur_index = self.expression.find(variable, previous_index + 1)
-				unknowns.append(self.get_coefficient(cur_index, self.expression))
-				previous_index = cur_index
-			previous_index = 0
-
-		return unknowns
+		return coefficients
 
 	@staticmethod
 	def beautify(expression):
@@ -161,3 +113,6 @@ class Expression:
 		return expression
 
 
+EXPR = Expression("22x*5x-92 = -42x")
+SECOND = Expression("1/2x + 6 - 2y = 4")
+print(SECOND.terms)

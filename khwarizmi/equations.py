@@ -4,7 +4,7 @@ import copy
 
 from khwarizmi.expression import Expression
 from khwarizmi.exc import NoEqualityError, NoVariableError
-from khwarizmi.misc import num, if_assign
+from khwarizmi.misc import num, if_assign, is_number
 
 OPERATORS = ["-", "+", "/", "*", '=']
 excused_symbols = ["/", "."]
@@ -17,15 +17,13 @@ class Equation(Expression):
 
 		Expression.__init__(self, equation)
 		self.equation = self.expression
-		self.equal_index = self.equation.index("=")
+		self.equal_index = self.equation.find("=")
 		self.sol_side = ""
 		self.inc_side = ""
 		self.get_sides()
 		self.unknown_index = self.equation.index(self.unknown)
-		self.coefficient = self.get_coefficient()
 		self.coefficient_length = 0
 		self.coefficient = self.get_coefficient()
-		self.coefficient_index = self.unknown_index - self.coefficient_length
 
 	def __str__(self):
 		"""String representation of the equation."""
@@ -61,20 +59,12 @@ class Equation(Expression):
 		"""Simplifies the equation by evaluating all coefficients of the equation to one single
 		coefficient."""
 
-		first_index = self.equation.find(self.unknown)
-		first_coefficient = self.get_coefficient(first_index)
 		sol_side, counter, left_hand_terms = self.sol_side, 0, self.get_terms(self.inc_side)
 
-		unknowns = self.get_coefficients(first_index)
-		unknowns.insert(0, first_coefficient)
-
-		if len(unknowns) > 2:
-			unknowns.pop()
-
+		unknowns = self.get_coefficients()
 		# For each number in unknowns, check if its found on the solution side;
 		# if it is, pass it to the equation side with opposite sign.
 		for number in unknowns:
-
 			index = sol_side.find(number + self.unknown)
 
 			if index == -1:
@@ -102,6 +92,11 @@ class Equation(Expression):
 		simplified = self.beautify(unknown + self.unknown + '=' + sol_side)
 		return simplified
 
+	def get_coefficient(self):
+
+		equation = self.simplify_equation()
+		return self.get_number(0, equation)
+
 	def sort(self, show=False):
 		"""Sorts the equation, which is a very highschool, wrongly phrased
 		way of saying that clears the unknown side by substracting all
@@ -117,9 +112,9 @@ class Equation(Expression):
 		equation = self.simplify_equation()
 		equal_sign = equation.index("=")
 		inc_side, sol_side = equation[0:equal_sign], equation[equal_sign + 1:]
-		symbol = self.get_number(inc_side[0], index, inc_side, catch_negatives=True)
+		symbol = self.coefficient
 
-		if symbol is None:
+		if not is_number(symbol):
 			symbol = if_assign(equation[0] == '-', '-1', '1')
 
 		inc_side = inc_side.replace(symbol, "", 1)
@@ -129,7 +124,7 @@ class Equation(Expression):
 
 			string = """Equation \n{}\n\nSimplified\n{}\n\nSorted\n{}\n\nSolved \n{}""".format(
 				self.equation, equation, inc_side + '=' + sol_side,
-										 self.unknown + '=' + str(num(eval(sol_side))) + '\n')
+				self.unknown + '=' + str(num(eval(sol_side))) + '\n')
 
 			print(string)
 
@@ -142,3 +137,6 @@ class Equation(Expression):
 		return num(eval(self.sort(show=show)))
 
 
+test = Equation('8x - 2x = 9 + 3x + 5')
+print(test.coefficient)
+test.solve(True)
