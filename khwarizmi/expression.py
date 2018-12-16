@@ -9,6 +9,7 @@ excused_symbols = ["/", "."]
 
 
 class Expression:
+	"""Base class for every algebraic expression of any form."""
 
 	def __init__(self, expression):
 		self.expression = expression.replace(' ', '')
@@ -33,6 +34,8 @@ class Expression:
 		return incs
 
 	def get_number(self, index, expression=None, catch_variable=False, catch_term=False):
+		"""Returns the number that starts at index on expression.
+		It may or may not catch full terms and variables."""
 
 		expression = self.expression if expression is None else expression
 		catcher = copy.copy(SEPARATORS)
@@ -77,6 +80,7 @@ class Expression:
 		return terms
 
 	def get_coefficients(self):
+		"""Returns every coefficient on this expression."""
 
 		coefficients = []
 
@@ -86,6 +90,7 @@ class Expression:
 				coefficient = if_assign(coefficient is '', '1', coefficient)
 				coefficient = if_assign(coefficient is '-', '-1', coefficient)
 				coefficients.append(coefficient)
+
 		return coefficients
 
 	@staticmethod

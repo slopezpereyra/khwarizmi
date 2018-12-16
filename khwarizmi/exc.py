@@ -145,3 +145,20 @@ class InvalidOperationError(_AlgebraicError):
 						required by the operation.""".format(self.a, self.b, self.a, self.b)
 
 		return error_string
+
+
+class NonAlgebraicOperationError(_AlgebraicError):
+
+	def __init__(self, a, b):
+		super().__init__()
+		self.a = a
+		self.b = b
+
+	def __str__(self):
+
+		error_string = """The operation between {} and {} was unsuccessful.
+						It either can't be done (only one of the expressions is algebraic)
+						or should be done with built-in operations 
+						(if neither of the expressions is algebraic).""".format(self.a, self.b)
+
+		return error_string

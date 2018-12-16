@@ -11,7 +11,7 @@ excused_symbols = ["/", "."]
 
 
 class Equation(Expression):
-	"""Base class for all equations."""
+	"""Base class for all expressions of the form a = b."""
 
 	def __init__(self, equation):
 
@@ -93,6 +93,7 @@ class Equation(Expression):
 		return simplified
 
 	def get_coefficient(self):
+		"""Returns this equation's coefficient."""
 
 		equation = self.simplify_equation()
 		return self.get_number(0, equation)
