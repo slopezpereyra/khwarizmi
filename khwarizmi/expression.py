@@ -11,14 +11,15 @@ excused_symbols = ["/", "."]
 class Expression:
 	"""Base class for every algebraic expression of any form."""
 
-	def __init__(self, expression):
+	def __init__(self, expression, no_vars_intended=False):
+		self.no_vars_intended = no_vars_intended
 		self.expression = expression.replace(' ', '')
 		self.variables = self.get_variables()
-		self.unknown = self.variables[0]
+		self.unknown = self.variables[0] if len(self.variables) > 0 else None
 		self.terms = self.get_terms()
 		self.coefficients = self.get_coefficients()
 
-	def get_variables(self):
+	def get_variables(self, no_vars_intended=False):
 		"""Adds every variable of the equation
 		to the variables attribute (list)."""
 
@@ -28,7 +29,7 @@ class Expression:
 			if symbol.isalpha() and symbol not in incs:
 				incs.append(symbol)
 
-		if len(incs) is 0:
+		if len(incs) is 0 and self.no_vars_intended is False:
 			raise NoVariableError(self.expression)
 
 		return incs
@@ -64,6 +65,9 @@ class Expression:
 		else:
 			number = expression
 
+		if expression[0].isalpha() and number == '':
+			return '1' if is_negative is False else '-1'
+
 		return number if is_negative is False else '-' + number
 
 	def get_terms(self, side=None):
@@ -98,25 +102,12 @@ class Expression:
 		"""Beautifies a mathematical expression, turning '--' into '+',
 		'+*' into '*', etc."""
 
-		if '--' in expression:
-			expression = expression.replace('--', '+')
-
-		if '*+' in expression:
-			expression = expression.replace('*+', '*')
-
+		expression = expression.replace('--', '+')
+		expression = expression.replace('*+', '*')
 		if expression[0] == '+':
 			expression = expression.replace('+', '', 1)
-
-		if '+-' in expression:
-			expression = expression.replace('+-', '-')
-
-		if '=+' in expression:
-			expression = expression.replace('=+', '=')
-
+		expression = expression.replace('+-', '-')
+		expression = expression.replace('=+', '=')
 		expression = expression.replace('/+', '/')
 
 		return expression
-
-
-EXPR = Expression("22x*5x-92 = -42x")
-SECOND = Expression("1/2x + 6 - 2y = 4")

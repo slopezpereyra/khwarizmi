@@ -1,6 +1,7 @@
 """Polynomial expressions and its operations."""
 
 from khwarizmi.expression import Expression
+from khwarizmi.operations import TermOperations
 from khwarizmi.exc import InvalidOperationError
 from khwarizmi.misc import if_assign, is_number
 
@@ -14,12 +15,12 @@ class Polynomial(Expression):
 		self.polynomial = polynomial
 		self.name = name
 		self.indeterminates = self.variables
+		self.degree = None
 		self.degrees = self.get_degrees()
-		self.degree = max(self.degrees)
-		self.primary_coefficient = self.get_primary_coefficient()
 		self.non_coefficient_term = self.get_non_coefficient_term()
-		self.polynomial = self.reorder_terms()
 		self.terms_by_degree = self.get_terms_by_degree()
+		self.primary_coefficient = self.get_primary_coefficient()
+		self.polynomial = self.reorder_terms()
 
 	def __str__(self):
 		if self.name is not None and self.name is not '':
@@ -30,24 +31,20 @@ class Polynomial(Expression):
 
 		"""Returns all degrees of all terms of this polynomial."""
 
-		last_power_index = 0
-		power_count = self.polynomial.count("**")
 		powers = []
 
-		for power in range(0, power_count):
-			index = self.polynomial.find("**", last_power_index)
-			powers.append(self.polynomial[index + 2])
-			last_power_index = index + 2
+		for term in self.terms:
+			powers.append(int(TermOperations.getpower(term)))
 
-		return sorted(powers, reverse=True)
+		powers = sorted(powers, reverse=True)
+		self.degree = str(powers[0])
+		return list(map(str, powers))
 
 	def get_primary_coefficient(self):
-
 		"""Returns the primary coefficient of this polynomial."""
 
-		coefficient = next(num for num in self.terms if num.endswith(self.degree))
-		var_index = coefficient.find(next(var for var in coefficient if var.isalpha()))
-		return coefficient[:var_index]
+		term = self.terms_by_degree[self.degree]
+		return self.get_number(0, term)
 
 	def get_non_coefficient_term(self):
 
@@ -57,21 +54,13 @@ class Polynomial(Expression):
 
 		"""Reorders the terms of the polynomial; higher degrees first."""
 
-		reordered = ""
+		ordered_terms = []
+
 		for degree in self.degrees:
-			for term in self.terms:
-				if "**" + degree in term:
-					if not term.startswith('-'):
-						term = '+' + term
-					reordered += term
-					break
+			ordered_terms.append(self.terms_by_degree[degree] + '**' + degree)
 
-		non_coefficient = if_assign(self.non_coefficient_term.startswith('-'), self.non_coefficient_term, '+' + self.non_coefficient_term)
-		reordered += non_coefficient
-		if reordered.startswith('+'):
-			reordered = reordered.replace("+", '', 1)
-
-		return Expression.beautify(reordered)
+		expression = "+".join(ordered_terms)
+		return Expression.beautify(expression)
 
 	def get_terms_by_degree(self):
 
@@ -80,14 +69,11 @@ class Polynomial(Expression):
 		terms_by_degree = {}
 
 		for degree in self.degrees:
-			for term in self.terms:
-				if "**" + degree in term:
-					index = term.find('*')
-					term_without_exponent = term[0:index]
-					terms_by_degree[degree] = term_without_exponent
-					break
+			term = next(term for term in self.terms if '**' + degree in term)
+			terms_by_degree[degree] = term[0:term.find('**')]
 
-		terms_by_degree["1"] = next(term for term in self.terms if '**' not in term)
+		if any('**' not in term for term in self.terms):
+			terms_by_degree["1"] = next((term for term in self.terms if '**' not in term), None)
 
 		return terms_by_degree
 
@@ -96,72 +82,56 @@ class PolynomialOperation:
 
 	"""Class holding static methods involving polynomial operations."""
 
-	def __init__(self, p, q):
-		self.p = p
-		self.q = q
-
 	@staticmethod
-	def addition(p, q, name):
-
-		"""Performs the addition of two polynomials and returns the resultant polynomial."""
+	def addition(p, q):
+		"""Performs addition of polynomials p and q."""
 
 		if not isinstance(p, Polynomial) or not isinstance(q, Polynomial):
 			raise InvalidOperationError(p, q)
 
 		result = ""
-
-		longer_polynomial = if_assign(len(p.degrees) >= len (q.degrees), p, q)
+		longer_polynomial = if_assign(len(p.degrees) >= len(q.degrees), p, q)
 
 		for degree in longer_polynomial.terms_by_degree:
 			try:
-				p_term_variable = next((char for char in p.terms_by_degree[degree] if char.isalpha()), 'x')
-				q_term_variable = next((char for char in q.terms_by_degree[degree] if char.isalpha()), 'x')
-
-				p_power_index = p.terms_by_degree[degree].find(p_term_variable)
-				q_power_index = q.terms_by_degree[degree].find(q_term_variable)
-
-				p_power_index = if_assign(p_power_index is -1, len(p.terms_by_degree[degree]), p_power_index)
-				q_power_index = if_assign(q_power_index is -1, len(q.terms_by_degree[degree]), q_power_index)
-
-				p_all_variables = p.terms_by_degree[degree][p_power_index:]
-				q_all_variables = q.terms_by_degree[degree][q_power_index:]
-
-				if p_all_variables != q_all_variables:
-					# Get this working
-					raise KeyError
-
-				p_term, q_term = p.terms_by_degree[degree][0:p_power_index], q.terms_by_degree[degree][0:q_power_index]
-				result_term = str(int(p_term) + int(q_term)) + p_all_variables + '**' + degree
-				if not result_term.startswith('-'):
-					result_term = '+' + result_term
-				result += result_term
+				p_term, q_term = p.terms_by_degree[degree] + '**' + degree, q.terms_by_degree[degree] + '**' + degree
+				result += TermOperations.add(p_term, q_term) + '+'
 
 			except KeyError:
-				print("Here!")
 				result_term = p.terms_by_degree[degree] + '**' + degree
 				if not result_term.startswith('-'):
 					result_term = '+' + result_term
-				result += result_term
+				result += result_term + '+'
 
-		if result.startswith('+'):
-			result = result.replace('+', '', 1)
-			result = result.replace('**1', '')
+		if result.endswith('+'):
+			result = result[:-1]
 
-		return Polynomial(result, name)
+		return Expression.beautify(result)
+
+	@staticmethod
+	def product(p, q, name=None):
+		"""Finds the product of polynomials p and q."""
+
+		if not isinstance(p, Polynomial) or not isinstance(q, Polynomial):
+			raise InvalidOperationError(p, q)
+
+		result = []
+
+		for p_term in p.terms:
+			for q_term in q.terms:
+				result.append(TermOperations.multiply(p_term, q_term))
+
+		result = '+'.join(result)
+		return Polynomial(Expression.beautify(result), name)
+
+# Error. When multiplying 3 by 6x**5 it returns 18x**6. No x, no exponent addition!
 
 
-Px = Polynomial("2x**3 - 5x**2 - 3x**4 + 7x**5 - 2 + 6x**9", "P(x)")
-Qx = Polynomial("3x**3 - 4x**2 + 6x**5 + 5 + 3x**9", "Q(x)")
+Px = Polynomial("2x**3 - x**2", "P(x)")
+Qx = Polynomial("6x**5 + 3x**9", "Q(x)")
 
-
-print(Px.terms)
-print("LOOK ", Px.non_coefficient_term, " ", Qx.non_coefficient_term)
-
-print(Px.terms_by_degree)
-
-
-print(Px)
-print(Qx)
-
-RESULT = PolynomialOperation.addition(Px, Qx, 'F(x)')
-print(RESULT)
+Fx = PolynomialOperation.product(Px, Qx, "F(x)")
+print(Fx.terms_by_degree)
+print(Fx.degrees)
+print(Fx)
+print(Fx.primary_coefficient)

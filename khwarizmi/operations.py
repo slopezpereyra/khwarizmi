@@ -1,15 +1,19 @@
 """Base class for algebraic operations."""
 
-from khwarizmi.misc import is_number, if_assign
+from khwarizmi.misc import is_number, if_assign, num
 from khwarizmi.exc import NonAlgebraicOperationError, InvalidOperationError
-from khwarizmi.expression import  Expression
+from khwarizmi.expression import Expression
 
 
-class Term:
-	"""Defines operations between to algebraic terms."""
+class TermOperations:
+	"""Defines operations between to algebraic terms.
+	This class is not ment to have instances, but is a placeholder
+	for static methods to be used on terms constructed on classes
+	deriving from Expression (see expression.py)."""
 
 	@staticmethod
 	def ispowered(a):
+		"""Returns true if a is being elevated by an exponent."""
 
 		return True if '**' in a else False
 
@@ -17,7 +21,7 @@ class Term:
 	def getpower(a):
 		"""Returns exponent of term a."""
 
-		if Term.ispowered(a):
+		if TermOperations.ispowered(a):
 			return a[a.find('**') + 2:]
 		return 1
 
@@ -30,11 +34,23 @@ class Term:
 		return False
 
 	@staticmethod
+	def commonvars(a, b):
+
+		a, b = Expression(a), Expression(b)
+		common_vars = []
+
+		for var in a.variables:
+			if var in b.variables:
+				common_vars.append(var)
+
+		return common_vars
+
+	@staticmethod
 	def add(a, b):
 		"""Returns the expression resultant of adding terms a and b."""
 
-		a = Expression(a)
-		b = Expression(b)
+		a = Expression(a, no_vars_intended=True)
+		b = Expression(b, no_vars_intended=True)
 
 		if is_number(a.expression) or is_number(b.expression):
 			raise NonAlgebraicOperationError
@@ -42,9 +58,9 @@ class Term:
 		if len(a.terms) > 1 or len(b.terms) > 1:
 			raise InvalidOperationError(a, b)
 
-		if Term.getpower(a.expression) is not Term.getpower(b.expression) or a.variables != b.variables:
+		if TermOperations.getpower(a.expression) is not TermOperations.getpower(b.expression) or a.variables != b.variables:
 			operator = if_assign(b.expression.startswith('-'), '', '+')
-			return a.expression + operator + b.expression
+			return Expression.beautify(a.expression + operator + b.expression)
 
 		a_coefficient = a.get_number(0)
 		b_coefficient = b.get_number(0)
@@ -53,14 +69,17 @@ class Term:
 		result = if_assign(result == '1', "", result)
 		result = if_assign(result == '-1', "-", result)
 
-		return result + "".join(a.variables) + '**' + Term.getpower(a.expression)
+		result += "".join(a.variables) + '**' + str(TermOperations.getpower(a.expression))
+		if result.endswith('**1'):
+			result = result.replace('**1', '')
+		return Expression.beautify(result)
 
 	@staticmethod
 	def substract(a, b):
 		"""Returns the expression resultant of substracting terms a and b."""
 
-		a = Expression(a)
-		b = Expression(b)
+		a = Expression(a, no_vars_intended=True)
+		b = Expression(b, no_vars_intended=True)
 
 		if is_number(a.expression) or is_number(b.expression):
 			raise NonAlgebraicOperationError
@@ -68,9 +87,9 @@ class Term:
 		if len(a.terms) > 1 or len(b.terms) > 1:
 			raise InvalidOperationError(a, b)
 
-		if Term.getpower(a.expression) is not Term.getpower(b.expression) or a.variables != b.variables:
+		if TermOperations.getpower(a.expression) is not TermOperations.getpower(b.expression) or a.variables != b.variables:
 			result = a.expression + '-' + b.expression
-			return result
+			return Expression.beautify(result)
 
 		a_coefficient = a.get_number(0)
 		b_coefficient = b.get_number(0)
@@ -79,16 +98,18 @@ class Term:
 		result = if_assign(result == '1', "", result)
 		result = if_assign(result == '-1', "-", result)
 
-		return result + "".join(a.variables) + '**' + Term.getpower(a.expression)
+		result += "".join(a.variables) + '**' + TermOperations.getpower(a.expression)
+		return Expression.beautify(result)
 
 	@staticmethod
 	def multiply(a, b):
+		"""Multiplies terms a and b."""
 
-		a = Expression(a)
-		b = Expression(b)
+		a = Expression(a, no_vars_intended=True)
+		b = Expression(b, no_vars_intended=True)
 
 		variables = set(a.variables + b.variables)
-		power = str(int(Term.getpower(a.expression)) + int(Term.getpower(b.expression)))
+		power = '**' + str(int(TermOperations.getpower(a.expression)) + int(TermOperations.getpower(b.expression)))
 		power = if_assign(power == '1', '', power)
 
 		if power == '0':
@@ -97,11 +118,31 @@ class Term:
 		a_coefficient = a.get_number(0)
 		b_coefficient = b.get_number(0)
 
-		result = str(int(a_coefficient) * int(b_coefficient)) + "".join(variables) + '**' + power
-		return result
+		result = str(int(a_coefficient) * int(b_coefficient)) + "".join(variables) + power
+		return Expression.beautify(result)
+
+	@staticmethod
+	def divide(a, b):
+		a = Expression(a)
+		b = Expression(b)
+
+		variables = set(a.variables + b.variables)
+		power = '**' + str(int(TermOperations.getpower(a.expression)) - int(TermOperations.getpower(b.expression)))
+		power = if_assign(power == '**1', '', power)
+
+		if power == '**0':
+			return "/".join(variables)
+
+		a_coefficient = a.get_number(0)
+		b_coefficient = b.get_number(0)
+
+		result = str(num(int(a_coefficient) / int(b_coefficient))) + "/".join(variables)
+		result = if_assign(power != '', '(' + result + ')' + power, result)
+		return Expression.beautify(result)
 
 
-# print(Term.add("4xz**3", "-5x**3"))
-# print(Term.substract('4x**3', '-5x**4'))
+A = '4xz'
+B = '4xz'
 
-print(Term.multiply("4xz**4", "3x**2"))
+print(TermOperations.commonvars(A, B))
+
