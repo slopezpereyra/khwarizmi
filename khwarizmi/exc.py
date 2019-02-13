@@ -101,7 +101,7 @@ class InvalidFormError(ConversionError):
 
 	def __str__(self):
 		error_string = ("The given parameter '" + self.form + "' is not valid."
-															  " Valid parameters are: " + self.forms[0] + ", "
+															 " Valid parameters are: " + self.forms[0] + ", "
 						+ self.forms[1] + ", " + self.forms[2])
 
 		return error_string
@@ -126,7 +126,7 @@ class InfinitelySolutionsError(_AlgebraicError):
 		super().__init__()
 
 	def __str__(self):
-		error_string = """You are requesting a solution for this system of equations
+		error_string = """You are requesting a solution for a system of equations
 						and there's an infinite number of them."""
 
 		return error_string

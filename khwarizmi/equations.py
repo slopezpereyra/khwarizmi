@@ -2,9 +2,9 @@
 
 import copy
 
-from khwarizmi.expression import Expression
-from khwarizmi.exc import NoEqualityError, NoVariableError
-from khwarizmi.misc import num, if_assign, is_number
+from expression import Expression
+from exc import NoEqualityError, NoVariableError
+from misc import num, if_assign, isanumber
 
 OPERATORS = ["-", "+", "/", "*", '=']
 excused_symbols = ["/", "."]
@@ -115,7 +115,7 @@ class Equation(Expression):
 		inc_side, sol_side = equation[0:equal_sign], equation[equal_sign + 1:]
 		symbol = self.coefficient
 
-		if not is_number(symbol):
+		if not isanumber(symbol):
 			symbol = if_assign(equation[0] == '-', '-1', '1')
 
 		inc_side = inc_side.replace(symbol, "", 1)
@@ -138,6 +138,3 @@ class Equation(Expression):
 		return num(eval(self.sort(show=show)))
 
 
-test = Equation('8x - 2x = 9 + 3x + 5')
-print(test.coefficient)
-test.solve(True)

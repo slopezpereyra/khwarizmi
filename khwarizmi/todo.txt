@@ -1,0 +1,1 @@
+# 1 Solve negative square problem on Polynomial evaluation (add parenthesis to negative squared numbers)

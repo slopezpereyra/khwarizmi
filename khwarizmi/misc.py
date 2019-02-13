@@ -14,7 +14,7 @@ def num(value):
 	else:
 		return int(value)
 
-def is_number(string):
+def isanumber(string):
 	"""Returns true if the string is representing a number"""
 
 	if string.isdigit():

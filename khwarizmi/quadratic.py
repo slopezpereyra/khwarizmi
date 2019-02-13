@@ -1,99 +1,114 @@
 import math
 
-from khwarizmi import equations
-from khwarizmi.exc import NegativeSquareError
+from equations import Equation
+from polynomials import Polynomial
+from exc import NegativeSquareError
+from enum import Enum, auto
+from misc import num
+from matplotlib import pyplot as plt
+
+class RootTypes(Enum):
+
+    DistinctRealRoots = auto()
+    IdenticRealRoots = auto()
+    ComplexConjugateRoots = auto()
 
 
-class Quadratic(equations.Equation):
+class Quadratic(Polynomial):
 
-	def __init__(self, equation):
-		self.equation = equation.replace(" ", "")
-		self.symbols = self.return_quadratic_elements()
-		self.formulated = self.formulate()
-		self.plus_solution = 0
-		self.minus_solution = 0
-		self.get_solutions()
+    def __init__(self, polynomial):
+        Polynomial.__init__(self, polynomial)
+        self.discriminant = self.get_discriminant()
+        self._root_type = None
+        self.roots_nature = self.get_roots_nature()
+        #self.roots = self.find_roots()
 
-	def __str__(self):
+    def getabc(self):
+        """Returns a tuple containing the values of a, b and c variables of Bhaskara's formula"""
+        print(self.terms)
+        return (self.get_number(0, self.terms[0]), self.get_number(0, self.terms[1]), self.terms[2])
 
-		return self.formulated
+    def get_discriminant(self):
+        """Returns the discriminant an evaluated number; this means it will not return the discriminants
+        form but its already simplified value."""
 
-	def return_quadratic_elements(self):
-		"""Returns a dictionary with the elements of the quadratic equation
-		with their indexes. For the quadratic equation
+        abc = self.getabc()
+        a, b, c = abc[0], abc[1], abc[2]
 
-		ax**2 + bx**2 + c = 0
+        disc = b + "**2-4*" + a + "*" + c
+        return eval(disc)
 
-		elements are a, first x, b, second x and c."""
+    def get_roots_nature(self):
+        """Returns a string defining this quadratic's roots
+        nature; i.e, is it complex, real, distinct or identic."""
 
-		symbols = {"a": 1, "b": 1, "c": 1}
-		equation = self.equation
+        if self.discriminant > 0:
+            self._root_type = RootTypes.DistinctRealRoots
+            return 'Two real distinct roots'
+        if self.discriminant == 0:
+            self._root_type = RootTypes.IdenticRealRoots
+            return 'Two undistinct real roots'
+        self._root_type = RootTypes.ComplexConjugateRoots
+        return 'Two complex conjugate roots'
 
-		if equation[0].isdigit():
-			a = self.get_number(0, equation)
-			symbols["a"] = float(a)
+    def bhaskarize(self):
+        """Returns a string representation of this quadratic's roots.
+        It returns a string and not an int/float because complex roots
+        can only be represented as strings (since Python can't
+        evaluate complex numbers."""
 
-		# Returns the first symbol after the first plus sign.
-		b_index = equation.find("+") + 1
+        disc = self.discriminant
+        abc = self.getabc()
+        a, b, c = abc[0], abc [1], abc [2]
+        den = eval("2*" + a)
 
-		if equation[b_index].isdigit():
-			b = self.get_number(b_index, equation)
-			symbols["b"] = float(b)
+        simple = ''
 
-		# Returns the first symbol after the second plus sign.
-		c_index = equation.find("+", b_index + 1) + 1
+        simple = '(-' + b + ' +/- i(' + str(disc) +')**½) /' + str(den)
+        if self._root_type != RootTypes.ComplexConjugateRoots:
+            simple = simple.replace('i', '')
+        return simple
 
-		if equation[c_index].isdigit():
-			c = self.get_number(c_index, equation)
-			symbols["c"] = float(c)
+    def get_roots(self):
 
-		return symbols
+        if self._root_type == RootTypes.ComplexConjugateRoots:
+            return self.bhaskarize()
 
-	def formulate(self):
-		"""Returns the quadratic equation expressed on the quadratic formula
+        bhask = self.bhaskarize().replace('½', '0.5')
 
-		x = -b + - (square root of b - 4ac) / 2a"""
+        if self._root_type == RootTypes.IdenticRealRoots:
+            return eval(bhask.replace('+/-', '+'))
 
-		sqr, roof, psms = "\u221A", "\u0305", "\u00b1"
-		s = self.symbols
+        roots = []
+        roots.append(eval(bhask.replace('+/-', '+')))
+        roots.append (eval(bhask.replace('+/-', '-')))
 
-		# Converts floats into integers when decimal part is equal to .0,
-		# to make str representation of the class more pretty.
+        return roots
 
-		for key in s:
-			str_key = str(s[key])
-			if str_key[1:] == ".0":
-				s[key] = int(s.get(key))
+    def graph (self, domain_range):
 
-		formulated = ("(-" + str(s.get("b")) + psms + sqr + str(s.get("b")) + roof +
-					  "*" + roof + "*" + roof + "2" + roof + "-" + roof + "4" + roof
-					  + "*" + roof + str(s.get("a")) + roof +
-					  "*" + roof + str(s.get("c")) + roof + ")/2*" + str(s.get("a")))
+        x_coors = []
+        y_coors = []
 
-		return formulated
+        for x in range(-domain_range, domain_range):
+            x_coors.append(x)
+            y_coors.append(self.evaluate(x))
+            print("INSPECT ", x, " ", self.evaluate(x))
 
-	def get_solutions(self):
+        print(x_coors)
+        print(y_coors)
 
-		s = self.symbols
+        plt.plot(x_coors)
+        plt.plot(y_coors)
+        plt.show()
 
-		print(s.get("b"), s.get("a"), s.get("c"))
 
-		try:
-			square = math.sqrt(s.get("b") ** 2 - 4 * s.get("a") * s.get("c"))
-		except ValueError:
-			raise NegativeSquareError
-
-		plus_solution = eval(
-			"(-" + str(s.get("b")) + "+" + str(int(square)) + ")")
-
-		minus_solution = eval(
-			"(-" + str(s.get("b")) + "-" + str(int(square)) + ")")
-
-		denominator = 2 * s.get("a")
-
-		self.plus_solution = plus_solution / denominator
-		self.minus_solution = minus_solution / denominator
-
-	def solve(self):
-
-		self.get_solutions()
+QUA = Quadratic("-2x**2 + 2x + 5")
+print("FIRSTLY ", QUA.terms, " AND ", QUA.getabc())
+print("\n")
+print(QUA.polynomial)
+print(QUA.discriminant)
+print(QUA.roots_nature)
+print(QUA.bhaskarize())
+print(QUA.get_roots())
+print(QUA.graph(10))
