@@ -21,11 +21,10 @@ class Quadratic(Polynomial):
         self.discriminant = self.get_discriminant()
         self._root_type = None
         self.roots_nature = self.get_roots_nature()
-        #self.roots = self.find_roots()
+        self.roots = self.get_roots()
 
     def getabc(self):
         """Returns a tuple containing the values of a, b and c variables of Bhaskara's formula"""
-        print(self.terms)
         return (self.get_number(0, self.terms[0]), self.get_number(0, self.terms[1]), self.terms[2])
 
     def get_discriminant(self):
@@ -52,24 +51,26 @@ class Quadratic(Polynomial):
         return 'Two complex conjugate roots'
 
     def bhaskarize(self):
-        """Returns a string representation of this quadratic's roots.
-        It returns a string and not an int/float because complex roots
-        can only be represented as strings (since Python can't
-        evaluate complex numbers."""
+        """Returns a string representation of this quadratic under Bhaskara's
+        formula."""
 
         disc = self.discriminant
         abc = self.getabc()
         a, b, c = abc[0], abc [1], abc [2]
         den = eval("2*" + a)
 
-        simple = ''
+        bhask = ''
 
-        simple = '(-' + b + ' +/- i(' + str(disc) +')**½) /' + str(den)
+        bhask = '(-' + b + ' +/- i(' + str(disc) +')**½) /' + str(den)
         if self._root_type != RootTypes.ComplexConjugateRoots:
-            simple = simple.replace('i', '')
-        return simple
+            bhask = bhask.replace('i', '')
+        return bhask
 
     def get_roots(self):
+        """Returns a string representation of this quadatric's roots.
+        It returns a string because complex roots can't be integers/floats,
+        since Python can't evaluate them, and every function should return
+        a single value type."""
 
         if self._root_type == RootTypes.ComplexConjugateRoots:
             return self.bhaskarize()
@@ -80,35 +81,28 @@ class Quadratic(Polynomial):
             return eval(bhask.replace('+/-', '+'))
 
         roots = []
-        roots.append(eval(bhask.replace('+/-', '+')))
-        roots.append (eval(bhask.replace('+/-', '-')))
+        roots.append(str(eval(bhask.replace('+/-', '+'))))
+        roots.append(str(eval(bhask.replace('+/-', '-'))))
 
         return roots
 
-    def graph (self, domain_range):
+    def graph (self, domain_range, axis_range=15):
+        """Graphs this quadratic from x1 = -domain_range
+        and x2 = domain_range.
+        Draws x and y axis with the same logic using axis_range."""
 
-        x_coors = []
-        y_coors = []
+        x_coors, y_coors = [], []
 
-        for x in range(-domain_range, domain_range):
+        for x in range(-domain_range, domain_range + 1):
             x_coors.append(x)
             y_coors.append(self.evaluate(x))
-            print("INSPECT ", x, " ", self.evaluate(x))
 
-        print(x_coors)
-        print(y_coors)
 
-        plt.plot(x_coors)
-        plt.plot(y_coors)
+        y_axis, x_axis = [axis_range, min(float(s) for s in y_coors)], [-axis_range, axis_range]
+
+        plt.plot(x_axis, [0]*len(x_axis), 'go-')
+        plt.plot([0]*len(y_axis), y_axis, 'go-')
+
+        plt.plot(x_coors, y_coors)
         plt.show()
 
-
-QUA = Quadratic("-2x**2 + 2x + 5")
-print("FIRSTLY ", QUA.terms, " AND ", QUA.getabc())
-print("\n")
-print(QUA.polynomial)
-print(QUA.discriminant)
-print(QUA.roots_nature)
-print(QUA.bhaskarize())
-print(QUA.get_roots())
-print(QUA.graph(10))

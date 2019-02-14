@@ -39,7 +39,6 @@ class Polynomial(Expression):
         powers = sorted(powers, reverse=True)
         self.degree = powers[0]
         return powers
-        return list(map(str, powers))
 
     def get_primary_coefficient(self):
         """Returns the primary coefficient of this polynomial."""
@@ -74,22 +73,8 @@ class Polynomial(Expression):
 
         return terms_by_degree
 
-        for degree in self.degrees:
-            term = next((term for term in self.terms if '**' + degree in term), "1")
-            terms_by_degree[degree] = term[0:term.find('**')]
-
-        if any('**' not in term for term in self.terms):
-            terms_by_degree["1"] = next((term for term in self.terms if '**' not in term), None)
-
-        if any(self.indeterminates[0] not in  term for term in self.terms):
-            terms_by_degree["0"] = next((term for term in self.terms if self.indeterminates[0] not in term), None)
-
-        return terms_by_degree
-
     def evaluate(self, x):
-        print(self.polynomial)
-        pol = self.polynomial.replace('x', '*' + str(x))
-        print(pol)
+        pol = self.polynomial.replace('x', '*(' + str(x) + ')')
         return eval(pol)
 
 

@@ -1,5 +1,5 @@
-from khwarizmi.expression import Expression
 import unittest
+from khwarizmi.expression import Expression
 
 class BasicExpressionsTest(unittest.TestCase):
 
