@@ -1,8 +1,11 @@
-from khwarizmi import equations
-from khwarizmi.exc import NoEqualityError, NoVariableError
 import unittest
-
+import sys
+import os
+sys.path.append(os.path.abspath('../khwarizmi'))
+import equations
+from exc import NoEqualityError, NoVariableError, NoVariableError
 # 0.22 seconds to run.
+
 
 class BasicEquationsTest(unittest.TestCase):
 

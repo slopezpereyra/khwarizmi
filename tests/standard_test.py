@@ -1,4 +1,7 @@
-from khwarizmi import linear, exc
+import sys
+import os
+sys.path.append(os.path.abspath('../khwarizmi'))
+import linear, exc
 import unittest
 
 # 0.20 seconds to run.

@@ -1,7 +1,9 @@
-from khwarizmi import linear
-from khwarizmi.exc import InfinitelySolutionsError
 import unittest
-
+import sys
+import os
+sys.path.append(os.path.abspath('../khwarizmi'))
+import linear
+from exc import InfinitelySolutionsError
 # 0.22 seconds to run.
 
 class LinearSystemTest(unittest.TestCase):

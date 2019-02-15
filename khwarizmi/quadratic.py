@@ -22,6 +22,8 @@ class Quadratic(Polynomial):
         self._root_type = None
         self.roots_nature = self.get_roots_nature()
         self.roots = self.get_roots()
+        self.vertex = self.get_vertex()
+        self.axis_of_simmetry = 'x = ' + str(self.vertex[0])
 
     def getabc(self):
         """Returns a tuple containing the values of a, b and c variables of Bhaskara's formula"""
@@ -86,6 +88,18 @@ class Quadratic(Polynomial):
 
         return roots
 
+    def get_vertex (self):
+        """Returns this quadratic's vertex (point intersected by
+        axis of symmetry)."""
+
+        abc =self.getabc()
+        a, b, c = abc[0], abc[1], abc[2]
+
+        x = '-' + b + '/(2*'+a + ')'
+        y = self.evaluate(x)
+
+        return (eval(x), y)
+
     def graph (self, domain_range, axis_range=15):
         """Graphs this quadratic from x1 = -domain_range
         and x2 = domain_range.
@@ -98,11 +112,18 @@ class Quadratic(Polynomial):
             y_coors.append(self.evaluate(x))
 
 
-        y_axis, x_axis = [axis_range, min(float(s) for s in y_coors)], [-axis_range, axis_range]
-
+        y_axis, x_axis = [max(float(s) for s in y_coors)*1.5, min(float(s) for s in y_coors)], [-axis_range, axis_range]
         plt.plot(x_axis, [0]*len(x_axis), 'go-')
+        plt.plot(s_axis_x, s_axis_y)
         plt.plot([0]*len(y_axis), y_axis, 'go-')
 
         plt.plot(x_coors, y_coors)
         plt.show()
 
+
+
+QUA = Quadratic("2x**2 - 2x + 2")
+print(QUA.get_vertex())
+print(QUA.roots)
+print(QUA.axis_of_simmetry)
+QUA.graph(15)

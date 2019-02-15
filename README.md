@@ -10,9 +10,12 @@ It allows you to cast, from simple strings that represent equations, complex and
 
 ## What can I do with it?
 
-There are many things you can manage to pull off with khwarizmi. What khwarizmi does best is working with **linear equations**; refactoring, solving and graphing them can be easily done. Apart from linear equations, you can work with **standard and quadratic equations** and even **solve and graph systems of equations**.
+Khwarizmi began as an equation solver, and ended up being much more. Working with linear or quadratic equations, polynomials of all kinds, systems of equations and operations between very basic to highly complex algebraic terms and expressions. Apart from expressing, simplifying and solving polynomials and equations, it can graph any linear or quadratic expression on a cartesian coordinate system. 
 
-On the Wiki you'll find reference pages from khwarizmi's modules. Refer to its pages for more information, or dive into /docs/sample_code.md to see some examples of how khwarizmi actually looks like.
+For a highscool student, there's pretty much anything you can't do with Khwarizmi of what you've learned in school; more complex, college-level operations will be, and are being, introduced. If you use khwarizmi for some reason, expect updates oftenly.
+
+If you want to see how Khwarizmi works, refer to /docs/sample_code.md on this repository, where you'll find some very simple examples of how khwarizmi looks like.
+
 
 ## Requirements
 

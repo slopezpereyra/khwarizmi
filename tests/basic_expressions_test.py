@@ -1,5 +1,8 @@
 import unittest
-from khwarizmi.expression import Expression
+import sys
+import os
+sys.path.append(os.path.abspath('../khwarizmi'))
+from expression import Expression
 
 class BasicExpressionsTest(unittest.TestCase):
 
