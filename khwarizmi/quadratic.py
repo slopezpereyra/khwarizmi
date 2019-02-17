@@ -26,15 +26,15 @@ class Quadratic(Polynomial):
         self.axis_of_simmetry = 'x = ' + str(self.vertex[0])
 
     def getabc(self):
-        """Returns a tuple containing the values of a, b and c variables of Bhaskara's formula"""
-        return (self.get_number(0, self.terms[0]), self.get_number(0, self.terms[1]), self.terms[2])
+        """Returns values of a, b and c coefficients from standard quadratic form,
+        ax**2 + bx + c"""
+        return self.get_number(0, self.terms[0]), self.get_number(0, self.terms[1]), self.terms[2]
 
     def get_discriminant(self):
         """Returns the discriminant an evaluated number; this means it will not return the discriminants
         form but its already simplified value."""
 
-        abc = self.getabc()
-        a, b, c = abc[0], abc[1], abc[2]
+        a, b, c = self.getabc()
 
         disc = b + "**2-4*" + a + "*" + c
         return eval(disc)
@@ -57,8 +57,7 @@ class Quadratic(Polynomial):
         formula."""
 
         disc = self.discriminant
-        abc = self.getabc()
-        a, b, c = abc[0], abc [1], abc [2]
+        a, b, c = self.getabc()
         den = eval("2*" + a)
 
         bhask = ''
@@ -92,8 +91,7 @@ class Quadratic(Polynomial):
         """Returns this quadratic's vertex (point intersected by
         axis of symmetry)."""
 
-        abc =self.getabc()
-        a, b, c = abc[0], abc[1], abc[2]
+        a, b, c = self.getabc()
 
         x = '-' + b + '/(2*'+a + ')'
         y = self.evaluate(x)
@@ -123,7 +121,6 @@ class Quadratic(Polynomial):
 
 
 QUA = Quadratic("2x**2 - 2x + 2")
-print(QUA.get_vertex())
+print(QUA.vertex)
 print(QUA.roots)
-print(QUA.axis_of_simmetry)
-QUA.graph(15)
+print(QUA.discriminant)

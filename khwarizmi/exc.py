@@ -94,71 +94,69 @@ class ConversionError(_AlgebraicError):
 
 
 class InvalidFormError(ConversionError):
-	def __init__(self, form, forms):
-		_AlgebraicError.__init__(self)
-		self.form = form
-		self.forms = forms
 
-	def __str__(self):
-		error_string = ("The given parameter '" + self.form + "' is not valid."
-															 " Valid parameters are: " + self.forms[0] + ", "
-						+ self.forms[1] + ", " + self.forms[2])
+    def __init__(self, form):
+        super().__init__()
 
-		return error_string
+    def __str__(self):
+
+        error_string = """The form passed as a convertion argument is not valid. Valid
+        forms are LinearForms.PointSlope, LinearForms.Standard, LinearForms.SlopeIntercept."""
 
 
 class RedundantConversionError(ConversionError):
 
-	def __init__(self, form):
-		super().__init__()
-		self.form = form
+    def __init__(self, form, intended):
+        super().__init__()
+        self.form = form
+        self.intended = intended
 
-	def __str__(self):
-		error_string = "Converting {} equation into {} Form is redundant.".format(
-			self.form, self.form)
+    def __str__(self):
+        error_string = "Converting {} equation into {} Form is redundant.".format(
+            self.form, self.intended)
 
-		return error_string
+        return error_string
 
 
 class InfinitelySolutionsError(_AlgebraicError):
 
-	def __init__(self):
-		super().__init__()
+    def __init__(self):
+        super().__init__()
 
-	def __str__(self):
-		error_string = """You are requesting a solution for a system of equations
-						and there's an infinite number of them."""
+    def __str__(self):
+        error_string = """You are requesting a solution for a system of equations
+        and there's an infinite number of them."""
 
-		return error_string
+        return error_string
 
 
 class InvalidOperationError(_AlgebraicError):
 
-	def __init__(self, a, b):
-		super().__init__()
-		self.a = a
-		self.b = b
+    def __init__(self, a, b):
+        super().__init__()
+        self.a = a
+        self.b = b
 
-	def __str__(self):
-		error_string = """Failed to perform operation between {} and {}.
-						It is likely that {} and/or {} are not of the type
-						required by the operation.""".format(self.a, self.b, self.a, self.b)
+    def __str__(self):
+        error_string = """Failed to perform operation between {} and {}.
+        It is likely that {} and/or {} are not of the type
+        required by the operation.""".format(self.a, self.b, self.a, self.b)
 
-		return error_string
+        return error_string
 
 
 class NonAlgebraicOperationError(_AlgebraicError):
 
-	def __init__(self, a, b):
-		super().__init__()
-		self.a = a
-		self.b = b
+    def __init__(self, a, b):
+        super().__init__()
+        self.a = a
+        self.b = b
 
-	def __str__(self):
+    def __str__(self):
 
-		error_string = """The operation between {} and {} was unsuccessful.
-						It either can't be done (only one of the expressions is algebraic)
-						or should be done with built-in operations 
-						(if neither of the expressions is algebraic).""".format(self.a, self.b)
+        error_string = """The operation between {} and {} was unsuccessful.
+        It either can't be done (only one of the expressions is algebraic)
+        or should be done with built-in operations 
+        (if neither of the expressions is algebraic).""".format(self.a, self.b)
 
-		return error_string
+        return error_string

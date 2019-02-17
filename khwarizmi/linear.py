@@ -2,12 +2,17 @@
 
 import matplotlib.pyplot as plt
 
+from enum import Enum, auto
 from expression import  Expression
 from equations import Equation
 from exc import (InvalidFormError, LinearSolutionError,
                            RedundantConversionError, UnableToDefineFormError, UnsuitableSlopeInterceptForm, InfinitelySolutionsError)
 from misc import if_assign, num
 
+class LinearForms(Enum):
+    Standard = "Standard Form"
+    SlopeIntercept = "Slope-Intercept"
+    PointSlope = "Point-Slope"
 
 class Linear(Equation):
     """Base class for all linear equations."""
@@ -24,7 +29,7 @@ class Linear(Equation):
     def get_x_coefficient(self):
         """Returns whatever number is multiplying the x variable on this equation as a string."""
 
-        side = if_assign(self.form == 'Standard Form', self.equation, self.sol_side)
+        side = if_assign(self.form is LinearForms.Standard, self.equation, self.sol_side)
 
         if side[0] == '-':
             coefficient = if_assign(side[1].isdigit(), self.get_number(1, side), "1")
@@ -41,7 +46,7 @@ class Linear(Equation):
 
         eqtn, index = self.equation, self.equation.index('x') + 2
 
-        if self.form == 'Standard Form':
+        if self.form == LinearForms.Standard:
             coefficient = if_assign(eqtn[index].isdigit(), self.get_number(index, eqtn), "1")
 
             if eqtn[index - 1] == '-':
@@ -59,16 +64,16 @@ class Linear(Equation):
         """Expresses the equation in the form passed as an argument
         and returns an instance of that form's class as the new expression.
 
-        Valid forms are Slope-Intercept, Standard and Point-Slope.
+        Valid forms are , Standard and .
         Keyword arguments:
 
         form (str): the form the equation will be converted to"""
 
-        if self.form == "Slope-Intercept Form":
+        if self.form == LinearForms.SlopeIntercept:
             return SlopeIntercept(self.equation).express_as(form)
-        if self.form == "Standard Form":
+        if self.form == LinearForms.Standard:
             return Standard(self.equation).express_as(form)
-        if self.form == "Point-Slope Form":
+        if self.form == LinearForms.PointSlope:
             return PointSlope(self.equation).express_as(form)
 
         return None
@@ -83,11 +88,11 @@ class Linear(Equation):
         """ Returns the form of this linear equation."""
 
         if "x" in self.inc_side and "y" in self.inc_side:
-            return "Standard Form"
+            return LinearForms.Standard
         if self.equation[self.equal_index - 1] == "y":
-            return "Slope-Intercept Form"
+            return LinearForms.SlopeIntercept
         if self.inc_side[0] == "y" and self.equation[self.equal_index - 1].isdigit():
-            return "Point-Slope Form"
+            return LinearForms.PointSlope
 
         raise UnableToDefineFormError(self.equation)
 
@@ -155,9 +160,9 @@ class Linear(Equation):
 
         for_variable (str): the variable to sort the equation for."""
 
-        if self.form == "Point-Slope Form":
+        if self.form is LinearForms.PointSlope:
             return PointSlope(self.equation).sort(for_variable)
-        if self.form == "Slope-Intercept Form":
+        if self.form is LinearForms.SlopeIntercept:
             return SlopeIntercept(self.equation).sort(for_variable)
 
         return Standard(self.equation).sort(for_variable)
@@ -192,7 +197,7 @@ class Linear(Equation):
         eqtn, value = self.equation, str(value)
         sol_side = self.sort(variable)
 
-        if eqtn[eqtn.find(variable) - 1] == "(" and self.form != "Point-Slope Form":
+        if eqtn[eqtn.find(variable) - 1] == "(" and self.form is not LinearForms.PointSlope:
             eqtn = eqtn.replace("(" + variable, "*(" + variable)
             sol_side = eqtn[eqtn.find("=") + 1:]
 
@@ -203,7 +208,7 @@ class Linear(Equation):
 
 
 class SlopeIntercept(Linear):
-    """Class for linear equations of Slope-Intercept form."""
+    """Class for linear equations of  form."""
 
     def __init__(self, equation):
         self.equation = equation
@@ -252,7 +257,7 @@ class SlopeIntercept(Linear):
 
 
     def sort(self, for_variable):
-        """Sorts a Slope-Intercept Form linear equation
+        """Sorts a  Form linear equation
         to be solved for a given variable.
 
         Keyword arguments:
@@ -270,23 +275,22 @@ class SlopeIntercept(Linear):
         """Expresses the equation in the form passed as an argument
         and returns an instance of that form's class as the new expression.
 
-        Valid forms are Slope-Intercept, Standard and Point-Slope.
+        Valid forms are , Standard and .
         Keyword arguments:
 
         form (str): the form the equation will be converted to"""
 
         # Required and convenient variables definition.
 
-        forms = ["Slope-Intercept", "Point-Slope", "Standard"]
         slope, y_intercept = str(self.slope), str(self.y_intercept)
 
-        if form not in forms:
-            raise InvalidFormError(form, forms)
-        if form in self.form:
-            raise RedundantConversionError(form)
+        if not isinstance(form, LinearForms):
+            raise InvalidFormError(self.equation.form, form)
+        if form == self.form:
+            raise RedundantConversionError(self.form, form)
 
         # Express in Standard Form.
-        if form == "Standard":
+        if form is LinearForms.Standard:
 
             slope = slope.replace('-', '')
             x_op = if_assign(self.slope < 0, '', '-')
@@ -299,8 +303,8 @@ class SlopeIntercept(Linear):
 
             return Standard(rewritten)
 
-        # Express in Point-Slope form.
-        if form == "Point-Slope":
+        # Express in  form.
+        if form is LinearForms.PointSlope:
 
             points = self.get_point(2)
             x_point, y_point = str(points[0]), str(points[1])
@@ -310,7 +314,7 @@ class SlopeIntercept(Linear):
 
             return PointSlope(rewritten)
 
-        raise InvalidFormError(form, forms)
+        raise InvalidFormError(form)
 
 
 class Standard(Linear):
@@ -354,20 +358,19 @@ class Standard(Linear):
         """Expresses the equation in the form passed as an argument
         and returns an instance of that form's class as the new expression.
 
-        Valid forms are Slope-Intercept, Standard and Point-Slope.
+        Valid forms are , Standard and .
         Keyword arguments:
 
         form (str): the form the equation will be converted to"""
 
         slope = str(self.slope)
-        forms = ["Slope-Intercept", "Point-Slope", "Standard"]
 
-        if form not in forms:
-            raise InvalidFormError(form, forms)
-        if form in self.form:
-            raise RedundantConversionError(form)
+        if not isinstance(form, LinearForms):
+            raise InvalidFormError(form)
+        if form is self.form:
+            raise RedundantConversionError(self.form, form)
 
-        if form == "Point-Slope":
+        if form is LinearForms.PointSlope:
 
             points = self.get_point(2)
             x_point, y_point = str(points[0]), str(points[1])
@@ -376,18 +379,18 @@ class Standard(Linear):
             rewritten = Expression.beautify(rewritten)
             return PointSlope(rewritten)
 
-        if form == "Slope-Intercept":
+        if form == LinearForms.SlopeIntercept:
             operator = "+" if self.y_intercept > 0 else ""
             rewritten = "y=" + slope + "x" + operator + str(self.y_intercept)
 
             rewritten = Expression.beautify(rewritten)
             return SlopeIntercept(rewritten)
 
-        raise InvalidFormError(form, forms)
+        raise InvalidFormError(form)
 
 
 class PointSlope(Linear):
-    """Class for all linear equations of Point-Slope form."""
+    """Class for all linear equations of  form."""
 
     def __init__(self, equation):
         Linear.__init__(self, equation)
@@ -436,7 +439,7 @@ class PointSlope(Linear):
         return sol_side
 
     def sort(self, for_variable):
-        """Sorts a Point-Slope Form linear equation
+        """Sorts a  Form linear equation
         to be solved for a given variable.
 
         Keyword arguments:
@@ -447,26 +450,26 @@ class PointSlope(Linear):
             return self.sort_for_y()
         if for_variable == 'x':
             return self.sort_for_x()
-        return None 
+        return None
+
     def express_as(self, form):
         """Expresses the equation in the form passed as an argument
         and returns an instance of that form's class as the new expression.
 
-        Valid forms are Slope-Intercept, Standard and Point-Slope.
+        Valid forms are , Standard and .
         Keyword arguments:
 
         form (str): the form the equation will be converted to"""
 
         eqtn, slope = self.equation, str(self.slope)
-        forms = ["Slope-Intercept", "Point-Slope", "Standard"]
 
-        if form not in forms:
-            raise InvalidFormError(form, forms)
-        if form in self.form:
-            raise RedundantConversionError(form)
+        if not isinstance(form, LinearForms):
+            raise InvalidFormError(form)
 
-        if form == 'Slope-Intercept':
+        if form is self.form:
+            raise RedundantConversionError(self.form, form)
 
+        if form is LinearForms.SlopeIntercept:
             operator = if_assign(self.y_intercept < 0, '', '+')
             rewritten = 'y=' + slope + "x" + operator + str(self.y_intercept)
 
@@ -475,7 +478,7 @@ class PointSlope(Linear):
 
             return SlopeIntercept(rewritten)
 
-        if form == 'Standard':
+        if form is LinearForms.Standard:
             operator = if_assign(eqtn[0] == '-', '-', '+')
             y_coefficient = if_assign(self.y_coefficient == '1', '', self.y_coefficient)
 
@@ -486,7 +489,7 @@ class PointSlope(Linear):
 
             return Standard(rewritten)
 
-        raise InvalidFormError(form, forms)
+        raise InvalidFormError(form)
 
 
 class LinearSystem:
@@ -521,9 +524,9 @@ class LinearSystem:
         return 'No solutions'
 
     def convert(self, linear):
-        """Converts a linear equation to Slope-Intercept form if under other form."""
+        """Converts a linear equation to Slope-Intercept  if under other form."""
         try:
-            return linear.express_as('Slope-Intercept')
+            return linear.express_as(LinearForms.SlopeIntercept)
         except RedundantConversionError:
             return linear
 
@@ -569,5 +572,4 @@ class LinearSystem:
 
     compatible = property(is_compatible)
     solutions = property(get_number_of_solutions)
-
 

@@ -25,10 +25,10 @@ class SlopeInterceptTest(unittest.TestCase):
             linear.Linear('y = 2 (x + 5)')
 
     def test_form(self):
-        self.assertEqual(self.linear_1.form, 'Slope-Intercept Form')
-        self.assertEqual(self.linear_2.form, 'Slope-Intercept Form')
-        self.assertEqual(self.linear_3.form, 'Slope-Intercept Form')
-        self.assertEqual(self.linear_4.form, 'Slope-Intercept Form')
+        self.assertEqual(self.linear_1.form, linear.LinearForms.SlopeIntercept)
+        self.assertEqual(self.linear_2.form, linear.LinearForms.SlopeIntercept)
+        self.assertEqual(self.linear_3.form, linear.LinearForms.SlopeIntercept)
+        self.assertEqual(self.linear_4.form, linear.LinearForms.SlopeIntercept)
 
     def test_x_mult(self):
         self.assertEqual(self.linear_1.x_coefficient, '2')
@@ -86,16 +86,16 @@ class SlopeInterceptTest(unittest.TestCase):
         self.assertEqual(self.linear_4.sort('y'), '(1*y+0.5)/-3')
 
     def test_expressing_as_standard(self):
-        self.assertEqual(self.linear_1.express_as('Standard').equation, '-2x+y=5')
-        self.assertEqual(self.linear_2.express_as('Standard').equation, '-12x+y=2')
-        self.assertEqual(self.linear_3.express_as('Standard').equation, '-0.5x+y=0.25')
-        self.assertEqual(self.linear_4.express_as('Standard').equation, '3x+y=-0.5')
+        self.assertEqual(self.linear_1.express_as(linear.LinearForms.Standard).equation, '-2x+y=5')
+        self.assertEqual(self.linear_2.express_as(linear.LinearForms.Standard).equation, '-12x+y=2')
+        self.assertEqual(self.linear_3.express_as(linear.LinearForms.Standard).equation, '-0.5x+y=0.25')
+        self.assertEqual(self.linear_4.express_as(linear.LinearForms.Standard).equation, '3x+y=-0.5')
 
     def test_expressing_as_point_slope(self):
-        self.assertEqual(self.linear_1.express_as('Point-Slope').equation, 'y-9=2(x-2)')
-        self.assertEqual(self.linear_2.express_as('Point-Slope').equation, 'y-26=12(x-2)')
-        self.assertEqual(self.linear_3.express_as('Point-Slope').equation, 'y-1.25=0.5(x-2)')
-        self.assertEqual(self.linear_4.express_as('Point-Slope').equation, 'y+6.5=-3(x-2)')
+        self.assertEqual(self.linear_1.express_as(linear.LinearForms.PointSlope).equation, 'y-9=2(x-2)')
+        self.assertEqual(self.linear_2.express_as(linear.LinearForms.PointSlope).equation, 'y-26=12(x-2)')
+        self.assertEqual(self.linear_3.express_as(linear.LinearForms.PointSlope).equation, 'y-1.25=0.5(x-2)')
+        self.assertEqual(self.linear_4.express_as(linear.LinearForms.PointSlope).equation, 'y+6.5=-3(x-2)')
 
     def test_solving_for_x(self):
         self.assertEqual(self.linear_1.solve_for('x', 3), 11)
@@ -110,16 +110,16 @@ class SlopeInterceptTest(unittest.TestCase):
         self.assertEqual(self.linear_4.solve_for('y', 5.5), -2)
 
     def test_solving_for_x_on_reexpression(self):
-        self.assertEqual(self.linear_1.express_as('Standard').solve_for('x', 3), 11)
-        self.assertEqual(self.linear_2.express_as('Standard').solve_for('x', 9), 110)
-        self.assertEqual(self.linear_3.express_as('Standard').solve_for('x', -4), -1.75)
-        self.assertEqual(self.linear_4.express_as('Standard').solve_for('x', -0.5), 1)
+        self.assertEqual(self.linear_1.express_as(linear.LinearForms.Standard).solve_for('x', 3), 11)
+        self.assertEqual(self.linear_2.express_as(linear.LinearForms.Standard).solve_for('x', 9), 110)
+        self.assertEqual(self.linear_3.express_as(linear.LinearForms.Standard).solve_for('x', -4), -1.75)
+        self.assertEqual(self.linear_4.express_as(linear.LinearForms.Standard).solve_for('x', -0.5), 1)
 
     def test_solving_for_y_on_reexpression(self):
-        self.assertEqual(self.linear_1.express_as('Point-Slope').solve_for('y', 3), -1)
-        self.assertEqual(self.linear_2.express_as('Point-Slope').solve_for('y', 9), 0.5833333333333334)
-        self.assertEqual(self.linear_3.express_as('Point-Slope').solve_for('y', -4), -8.5)
-        self.assertEqual(self.linear_4.express_as('Point-Slope').solve_for('y', 5.5), -2)
+        self.assertEqual(self.linear_1.express_as(linear.LinearForms.PointSlope).solve_for('y', 3), -1)
+        self.assertEqual(self.linear_2.express_as(linear.LinearForms.PointSlope).solve_for('y', 9), 0.5833333333333334)
+        self.assertEqual(self.linear_3.express_as(linear.LinearForms.PointSlope).solve_for('y', -4), -8.5)
+        self.assertEqual(self.linear_4.express_as(linear.LinearForms.PointSlope).solve_for('y', 5.5), -2)
 
 if __name__ == '__main__':
     unittest.main()
