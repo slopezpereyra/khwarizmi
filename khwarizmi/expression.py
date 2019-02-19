@@ -39,24 +39,24 @@ class Expression:
         It may or may not catch full terms and variables."""
 
         expression = self.expression if expression is None else expression
-        catcher = copy.copy(SEPARATORS)
+        separators = copy.copy(SEPARATORS)
         is_negative = False
 
         if catch_term is True and catch_variable is False:
             catch_variable = True
 
         if catch_variable is False:
-            catcher.extend(self.variables)
+            separators.extend(self.variables)
         if catch_term is True:
-            catcher.remove('*')
+            separators.remove('*')
 
         expression = expression[index:]
         if expression.startswith('-'):
             is_negative = True
             expression = expression[1:]
 
-        if any(x in catcher for x in expression):
-            separator = next((x for x in expression if x in catcher))
+        if any(x in separators for x in expression):
+            separator = next((x for x in expression if x in separators))
             pos = expression.find(separator)
             if expression[0:pos] is "" and isanumber(expression[0:pos+1]):
                 number = expression[0:pos+1]

@@ -23,12 +23,12 @@ class Polynomial(Expression):
         self.polynomial = self.reorder_terms()
 
     def __str__(self):
+
         if self.name is not None and self.name is not '':
             return self.name + " = " + self.polynomial
         return self.polynomial
 
     def get_degrees(self):
-
         """Returns all degrees of all terms of this polynomial."""
 
         powers = []
@@ -94,9 +94,9 @@ class PolynomialOperation:
 
         for degree in longer_polynomial.terms_by_degree:
             try:
-                p_term, q_term = p.terms_by_degree[degree] + '**' + degree, q.terms_by_degree[degree] + '**' + degree
-                result += TermOperations.add(p_term, q_term) + '+'
-                print("Result is being ", result)
+                term_of_p = p.terms_by_degree[degree] + '**' + degree
+                term_of_q = q.terms_by_degree[degree] + '**' + degree
+                result += TermOperations.add(term_of_p, term_of_q) + '+'
 
             except KeyError:
                 result_term = p.terms_by_degree[degree] + '**' + degree
@@ -111,20 +111,17 @@ class PolynomialOperation:
 
     @staticmethod
     def product(p, q, name=None):
-        """Finds the product of polynomials p and q."""
+        """Takes the product of polynomials p and q."""
 
         if not isinstance(p, Polynomial) or not isinstance(q, Polynomial):
             raise InvalidOperationError(p, q)
 
         result = []
 
-        for p_term in p.terms:
-            for q_term in q.terms:
-                result.append(TermOperations.multiply(p_term, q_term))
+        for term_of_p in p.terms:
+            for term_of_q in q.terms:
+                result.append(TermOperations.multiply(term_of_p, term_of_q))
 
         result = '+'.join(result)
         return Polynomial(Expression.beautify(result), name)
 
-POL = Polynomial("-2x**2 + 2x + 5")
-print(POL.terms)
-print(POL.evaluate(-2))

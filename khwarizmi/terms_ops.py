@@ -143,6 +143,5 @@ class TermOperations:
         return Expression.beautify(result)
 
 
-A = '4xz'
-B = '4xz'
-
+TERM = '-1/2'
+print(TermOperations.getpower(TERM))

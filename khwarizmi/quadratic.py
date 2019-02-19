@@ -13,7 +13,6 @@ class RootTypes(Enum):
     IdenticRealRoots = auto()
     ComplexConjugateRoots = auto()
 
-
 class Quadratic(Polynomial):
 
     def __init__(self, polynomial):
@@ -117,10 +116,3 @@ class Quadratic(Polynomial):
 
         plt.plot(x_coors, y_coors)
         plt.show()
-
-
-
-QUA = Quadratic("2x**2 - 2x + 2")
-print(QUA.vertex)
-print(QUA.roots)
-print(QUA.discriminant)
