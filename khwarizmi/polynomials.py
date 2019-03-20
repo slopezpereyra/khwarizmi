@@ -51,10 +51,10 @@ class Polynomial(Expression):
         return next((term for term in self.terms if isanumber(term)), "0")
 
     def reorder_terms(self):
-
         """Reorders the terms of the polynomial; higher degrees first."""
 
         ordered_terms = []
+        print("POLYNOMIAL IS ", self.polynomial, " with degrees ", self.degrees)
 
         for degree in self.degrees:
             ordered_terms.append(self.terms_by_degree[degree])
@@ -62,8 +62,14 @@ class Polynomial(Expression):
         expression = "+".join(ordered_terms)
         return Expression.beautify(expression)
 
-    def get_terms_by_degree(self):
+    def simplify(self):
+        """Simplify terms of same degree into single term."""
+        index = 0
+        for degree in self.degrees:
+            if any(x in degrees for degrees in self.degrees[index:]):
+                pass
 
+    def get_terms_by_degree(self):
         """Returns a dictionary where each term is paired to a degree key."""
 
         terms_by_degree = {}
@@ -79,7 +85,6 @@ class Polynomial(Expression):
 
 
 class PolynomialOperation:
-
     """Class holding static methods involving polynomial operations."""
 
     @staticmethod
@@ -94,12 +99,12 @@ class PolynomialOperation:
 
         for degree in longer_polynomial.terms_by_degree:
             try:
-                term_of_p = p.terms_by_degree[degree] + '**' + degree
-                term_of_q = q.terms_by_degree[degree] + '**' + degree
-                result += TermOperations.add(term_of_p, term_of_q) + '+'
+                term_of_p = p.terms_by_degree[degree]
+                term_of_q = q.terms_by_degree[degree]
+                result += str(TermOperations.add(term_of_p, term_of_q, non_algebraic=True)) + '+'
 
             except KeyError:
-                result_term = p.terms_by_degree[degree] + '**' + degree
+                result_term = longer_polynomial.terms_by_degree[degree]
                 if not result_term.startswith('-'):
                     result_term = '+' + result_term
                 result += result_term + '+'
@@ -125,3 +130,10 @@ class PolynomialOperation:
         result = '+'.join(result)
         return Polynomial(Expression.beautify(result), name)
 
+P = Polynomial('2x**5 + 2x**4 - 5x**2 - 3')
+Q = Polynomial('-4x**5 + 5x**4 - 4x**3 - 1')
+
+print(P, '\n\n', Q)
+print("")
+F = PolynomialOperation.product(P, Q)
+print(F)

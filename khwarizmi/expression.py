@@ -109,6 +109,8 @@ class Expression:
         expression = expression.replace('+-', '-')
         expression = expression.replace('=+', '=')
         expression = expression.replace('/+', '/')
-        expression = expression.replace('**1', '')
+        neutral_power = expression.find('**1')
+        if neutral_power != -1 and not expression[neutral_power + 1].isdigit():
+            expression.replace('**1', '', neutral_power)
 
         return expression

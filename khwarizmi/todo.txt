@@ -1,6 +1,6 @@
 # 1 Solve negative square problem on Polynomial evaluation (add parenthesis to negative squared numbers) - - - > DONE
-# 2 Add tests por Polynomial class
+# 2 Add tests por Polynomial class --> DONE
 # 3 Add tests for TermOperations
 # 4 Add tests for Polynomial Operations
-# 5 Add tests for quadratics
+# 5 Add tests for quadratics -- > DONE
 # 6 From misc.py, fix isanumber() function. It's returning False when dealing with fractions, such as 1/2, since '/' is not a digit.

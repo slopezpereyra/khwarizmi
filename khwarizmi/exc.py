@@ -1,7 +1,7 @@
 """Defines exceptions for this package."""
 
 
-class _AlgebraicError (Exception):
+class _AlgebraicError (BaseException):
 	"""Base class for all equation-related errors."""
 
 	def __init__(self):
@@ -158,5 +158,17 @@ class NonAlgebraicOperationError(_AlgebraicError):
         It either can't be done (only one of the expressions is algebraic)
         or should be done with built-in operations 
         (if neither of the expressions is algebraic).""".format(self.a, self.b)
+
+        return error_string
+
+class NoSquareError(_AlgebraicError):
+
+    def __init__(self, expression):
+        super().__init__()
+        self.expression = expression
+
+    def __str__(self):
+        error_string = """None of the terms in {} is squared in such a way that it could be considered
+        a quadratic expression""".format(self.expression)
 
         return error_string

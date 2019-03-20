@@ -1,28 +1,49 @@
 import math
-
 from equations import Equation
 from polynomials import Polynomial
-from exc import NegativeSquareError
+from expression import Expression
+from exc import NoSquareError
 from enum import Enum, auto
 from misc import num
 from matplotlib import pyplot as plt
 
 class RootTypes(Enum):
 
-    DistinctRealRoots = auto()
-    IdenticRealRoots = auto()
-    ComplexConjugateRoots = auto()
+    DistinctRealRoots = "Distinct real roots"
+    IdenticRealRoots = "Identical real roots"
+    ComplexConjugateRoots = "Complex conjugate roots"
 
 class Quadratic(Polynomial):
 
     def __init__(self, polynomial):
         Polynomial.__init__(self, polynomial)
+        self._complete()
         self.discriminant = self.get_discriminant()
-        self._root_type = None
-        self.roots_nature = self.get_roots_nature()
+        self._roots_type = self.get_roots_type()
         self.roots = self.get_roots()
         self.vertex = self.get_vertex()
         self.axis_of_simmetry = 'x = ' + str(self.vertex[0])
+
+    def _complete(self):
+        if not any('**2' in term for term in self.terms):
+            raise NoSquareError(self.expression)
+
+        term_count = len(self.terms)
+
+        if term_count is 3:
+            return
+
+        if term_count is 2:
+            if any(self.variables[0] not in term for term in self.terms):
+                self.terms.insert(1, '0' + self.variables[0])
+            else:
+                self.terms.insert(2, '0')
+
+        if term_count is 1:
+            self.terms.insert(1, '0' + self.variables[0])
+            self.terms.insert(2, '0')
+
+        self.expression = Expression.beautify('+'.join(self.terms))
 
     def getabc(self):
         """Returns values of a, b and c coefficients from standard quadratic form,
@@ -35,54 +56,63 @@ class Quadratic(Polynomial):
 
         a, b, c = self.getabc()
 
-        disc = b + "**2-4*" + a + "*" + c
+        disc = '(' + b + ")**2-4*" + a + "*" + c
         return eval(disc)
 
-    def get_roots_nature(self):
+    def get_roots_type(self):
         """Returns a string defining this quadratic's roots
         nature; i.e, is it complex, real, distinct or identic."""
 
         if self.discriminant > 0:
-            self._root_type = RootTypes.DistinctRealRoots
-            return 'Two real distinct roots'
+            return RootTypes.DistinctRealRoots
         if self.discriminant == 0:
-            self._root_type = RootTypes.IdenticRealRoots
-            return 'Two undistinct real roots'
-        self._root_type = RootTypes.ComplexConjugateRoots
-        return 'Two complex conjugate roots'
+            return RootTypes.IdenticRealRoots
+        return RootTypes.ComplexConjugateRoots
+
+    @property
+    def isascendant(self):
+        return False if self.getabc()[0].startswith('-') else True
 
     def bhaskarize(self):
         """Returns a string representation of this quadratic under Bhaskara's
         formula."""
 
-        disc = self.discriminant
+        disc = str(self.discriminant)
         a, b, c = self.getabc()
         den = eval("2*" + a)
 
         bhask = ''
 
-        bhask = '(-' + b + ' +/- i(' + str(disc) +')**½) /' + str(den)
-        if self._root_type != RootTypes.ComplexConjugateRoots:
+        if self._roots_type == RootTypes.ComplexConjugateRoots:
+            if disc.startswith('-'):
+                disc = disc.replace('-', '')
+
+        bhask = '(-' + b + ' +/- i(' + disc +'**½)) / ' + str(den)
+        if self._roots_type != RootTypes.ComplexConjugateRoots:
             bhask = bhask.replace('i', '')
         return bhask
 
     def get_roots(self):
-        """Returns a string representation of this quadatric's roots.
-        It returns a string because complex roots can't be integers/floats,
-        since Python can't evaluate them, and every function should return
-        a single value type."""
+        """Returns the roots of this quadratic.
+        Depending on the case, it'll return an int, a string or
+        a tuple of two integers. Unfortunately, this can't be
+        solved in an elegant way, and is a consequence of the different
+        possible results of solving for roots.
+        User should be careful before manipulating roots because of this,
+        but can help himself using the roots_type attribute to know what
+        to expect from the roots."""
 
-        if self._root_type == RootTypes.ComplexConjugateRoots:
-            return self.bhaskarize()
+        if self._roots_type == RootTypes.ComplexConjugateRoots:
+            return [self.bhaskarize()]
 
         bhask = self.bhaskarize().replace('½', '0.5')
 
-        if self._root_type == RootTypes.IdenticRealRoots:
-            return eval(bhask.replace('+/-', '+'))
+        if self._roots_type == RootTypes.IdenticRealRoots:
+            return num(eval(bhask.replace('+/-', '+')))
 
         roots = []
-        roots.append(str(eval(bhask.replace('+/-', '+'))))
-        roots.append(str(eval(bhask.replace('+/-', '-'))))
+        roots.append(eval(bhask.replace('+/-', '+')))
+        roots.append(eval(bhask.replace('+/-', '-')))
 
         return roots
 
@@ -92,10 +122,10 @@ class Quadratic(Polynomial):
 
         a, b, c = self.getabc()
 
-        x = '-' + b + '/(2*'+a + ')'
+        x = eval('-' + b + '/(2*'+ a + ')')
         y = self.evaluate(x)
 
-        return (eval(x), y)
+        return (num(x), num(y))
 
     def graph (self, domain_range, axis_range=15):
         """Graphs this quadratic from x1 = -domain_range
@@ -116,3 +146,8 @@ class Quadratic(Polynomial):
 
         plt.plot(x_coors, y_coors)
         plt.show()
+
+    @property
+    def roots_type(self):
+        return self._roots_type.value
+

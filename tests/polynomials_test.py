@@ -4,6 +4,8 @@ import os
 sys.path.append(os.path.abspath('../khwarizmi'))
 from polynomials import Polynomial
 
+# 0.001 sec
+
 class PolynomialsTest(unittest.TestCase):
 
     def setUp(self):
@@ -33,6 +35,24 @@ class PolynomialsTest(unittest.TestCase):
 
     def test_non_coefficient_term(self):
         self.assertEqual(self.a_polynomial.non_coefficient_term, '-9')
+        self.assertEqual(self.b_polynomial.non_coefficient_term, '-2')
+        self.assertEqual(self.c_polynomial.non_coefficient_term, '-1/2')
+
+    def test_terms_by_degree(self):
+        dic_a = {4: '2x**4', 3: '4x**3', 2: '-5x**2', 0: '-9'}
+        dic_b = {4: '4a**4', 2: '2a**2', 0: '-2'}
+        dic_c = {4: '1/2z**4', 0: '-1/2'}
+
+        self.assertDictEqual(self.a_polynomial.terms_by_degree, dic_a)
+        self.assertDictEqual(self.b_polynomial.terms_by_degree, dic_b)
+        self.assertDictEqual(self.c_polynomial.terms_by_degree, dic_c)
+
+    def test_primary_coefficient(self):
+        self.assertEqual(self.a_polynomial.primary_coefficient, '2')
+        self.assertEqual(self.b_polynomial.primary_coefficient, '4')
+        self.assertEqual(self.c_polynomial.primary_coefficient, '1/2')
+
+
 
 if __name__ == '__main__':
     unittest.main()

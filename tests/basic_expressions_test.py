@@ -4,6 +4,8 @@ import os
 sys.path.append(os.path.abspath('../khwarizmi'))
 from expression import Expression
 
+# 0.001 sec
+
 class BasicExpressionsTest(unittest.TestCase):
 
 	def setUp(self):

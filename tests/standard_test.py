@@ -4,7 +4,7 @@ sys.path.append(os.path.abspath('../khwarizmi'))
 import linear, exc
 import unittest
 
-# 0.20 seconds to run.
+# 0.011 seconds to run.
 
 class SlopeInterceptTest(unittest.TestCase):
 

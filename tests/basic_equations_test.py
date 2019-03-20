@@ -4,7 +4,8 @@ import os
 sys.path.append(os.path.abspath('../khwarizmi'))
 import equations
 from exc import NoEqualityError, NoVariableError, NoVariableError
-# 0.22 seconds to run.
+
+# 0.002 seconds to run.
 
 
 class BasicEquationsTest(unittest.TestCase):

@@ -4,7 +4,8 @@ import os
 sys.path.append(os.path.abspath('../khwarizmi'))
 import linear
 from exc import InfinitelySolutionsError
-# 0.22 seconds to run.
+
+# 0.004 sec
 
 class LinearSystemTest(unittest.TestCase):
 

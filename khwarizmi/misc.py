@@ -50,5 +50,3 @@ def if_assign(condition, if_true, if_false):
 
     return if_true if condition else if_false
 
-TERM = '-5x**2'
-print(isanumber(TERM))

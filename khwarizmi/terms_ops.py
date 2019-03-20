@@ -48,13 +48,16 @@ class TermOperations:
         return common_vars
 
     @staticmethod
-    def add(a, b):
+    def add(a, b, non_algebraic=False):
         """Returns the expression resultant of adding terms a and b."""
 
         a = Expression(a, no_vars_intended=True)
         b = Expression(b, no_vars_intended=True)
 
         if isanumber(a.expression) or isanumber(b.expression):
+
+            if non_algebraic is True:
+                return num(num(a.expression) + num(b.expression))
             raise NonAlgebraicOperationError
 
         if len(a.terms) > 1 or len(b.terms) > 1:
@@ -142,6 +145,3 @@ class TermOperations:
         result = if_assign(power != '', '(' + result + ')' + power, result)
         return Expression.beautify(result)
 
-
-TERM = '-1/2'
-print(TermOperations.getpower(TERM))

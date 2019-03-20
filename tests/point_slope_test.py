@@ -4,7 +4,7 @@ sys.path.append(os.path.abspath('../khwarizmi'))
 import linear, exc
 import unittest
 
-# 0.22 seconds to run.
+# 0.014 seconds to run.
 
 class PointSlopeTest(unittest.TestCase):
 
