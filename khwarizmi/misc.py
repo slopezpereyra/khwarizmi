@@ -50,3 +50,4 @@ def if_assign(condition, if_true, if_false):
 
     return if_true if condition else if_false
 
+print(isanumber('1/2'))

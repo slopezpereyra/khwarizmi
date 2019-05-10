@@ -17,15 +17,14 @@ class TermOperations:
 
         return True if '**' in a else False
 
+
     @staticmethod
     def getpower(a):
         """Returns exponent of term a."""
 
         if TermOperations.ispowered(a):
             return num(a[a.find('**') + 2:])
-        elif not isanumber(a):
-            return 1
-        return 0
+        return 1
 
     @staticmethod
     def isnegative(a):
@@ -38,7 +37,7 @@ class TermOperations:
     @staticmethod
     def commonvars(a, b):
 
-        a, b = Expression(a), Expression(b)
+        a, b = Expression(a, no_vars_intended=True), Expression(b, no_vars_intended=True)
         common_vars = []
 
         for var in a.variables:
@@ -53,6 +52,8 @@ class TermOperations:
 
         a = Expression(a, no_vars_intended=True)
         b = Expression(b, no_vars_intended=True)
+
+        print(a, b)
 
         if isanumber(a.expression) or isanumber(b.expression):
 
@@ -113,17 +114,26 @@ class TermOperations:
         a = Expression(a, no_vars_intended=True)
         b = Expression(b, no_vars_intended=True)
 
+        print("P of A : ", TermOperations.getpower(a.expression))
+        print("P of B : ", TermOperations.getpower(b.expression))
+
+        power = str(if_assign(TermOperations.getpower(a.expression) >= TermOperations.getpower(b.expression), TermOperations.getpower(a.expression), TermOperations.getpower(b.expression)))
         variables = set(a.variables + b.variables)
-        power = '**' + str(int(TermOperations.getpower(a.expression)) + int(TermOperations.getpower(b.expression)))
+
+        if len(TermOperations.commonvars(a.expression, b.expression)) > 0:
+            power = str(int(TermOperations.getpower(a.expression)) + int(TermOperations.getpower(b.expression)))
+
         power = if_assign(power == '1', '', power)
 
-        if power == '0':
+        if power == '1':
             return "".join(variables)
 
         a_coefficient = a.get_number(0)
         b_coefficient = b.get_number(0)
 
-        result = str(int(a_coefficient) * int(b_coefficient)) + "".join(variables) + power
+        print("POWER IS ,", power)
+
+        result = str(int(a_coefficient) * int(b_coefficient)) + "".join(variables) + '**' + power
         return Expression.beautify(result)
 
     @staticmethod
@@ -145,3 +155,10 @@ class TermOperations:
         result = if_assign(power != '', '(' + result + ')' + power, result)
         return Expression.beautify(result)
 
+A = "-9z**2"
+B = "3x**5"
+print("TERMS ARE ", A, " ", B)
+print(TermOperations.getpower(A))
+print(TermOperations.multiply(A, B))
+
+# Find a way to individualize powers, so that we are not talking about the exponents of a whole term, but of the elements of that term.

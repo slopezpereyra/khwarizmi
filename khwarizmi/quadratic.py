@@ -7,11 +7,13 @@ from enum import Enum, auto
 from misc import num
 from matplotlib import pyplot as plt
 
+
 class RootTypes(Enum):
 
     DistinctRealRoots = "Distinct real roots"
     IdenticRealRoots = "Identical real roots"
     ComplexConjugateRoots = "Complex conjugate roots"
+
 
 class Quadratic(Polynomial):
 
@@ -73,6 +75,11 @@ class Quadratic(Polynomial):
     def isascendant(self):
         return False if self.getabc()[0].startswith('-') else True
 
+    @property
+    def factorized(self):
+        roots = self.get_roots()
+        return '{}(x - {})(x - {}'.format(self.getabc()[0], roots[0], roots[1])
+
     def bhaskarize(self):
         """Returns a string representation of this quadratic under Bhaskara's
         formula."""
@@ -80,8 +87,6 @@ class Quadratic(Polynomial):
         disc = str(self.discriminant)
         a, b, c = self.getabc()
         den = eval("2*" + a)
-
-        bhask = ''
 
         if self._roots_type == RootTypes.ComplexConjugateRoots:
             if disc.startswith('-'):
@@ -93,14 +98,7 @@ class Quadratic(Polynomial):
         return bhask
 
     def get_roots(self):
-        """Returns the roots of this quadratic.
-        Depending on the case, it'll return an int, a string or
-        a tuple of two integers. Unfortunately, this can't be
-        solved in an elegant way, and is a consequence of the different
-        possible results of solving for roots.
-        User should be careful before manipulating roots because of this,
-        but can help himself using the roots_type attribute to know what
-        to expect from the roots."""
+        """Returns a list containing the roots of this quadratic."""
 
         if self._roots_type == RootTypes.ComplexConjugateRoots:
             return [self.bhaskarize()]
@@ -108,7 +106,7 @@ class Quadratic(Polynomial):
         bhask = self.bhaskarize().replace('½', '0.5')
 
         if self._roots_type == RootTypes.IdenticRealRoots:
-            return num(eval(bhask.replace('+/-', '+')))
+            return [num(eval(bhask.replace('+/-', '+')))]
 
         roots = []
         roots.append(eval(bhask.replace('+/-', '+')))
@@ -138,10 +136,8 @@ class Quadratic(Polynomial):
             x_coors.append(x)
             y_coors.append(self.evaluate(x))
 
-
         y_axis, x_axis = [max(float(s) for s in y_coors)*1.5, min(float(s) for s in y_coors)], [-axis_range, axis_range]
         plt.plot(x_axis, [0]*len(x_axis), 'go-')
-        plt.plot(s_axis_x, s_axis_y)
         plt.plot([0]*len(y_axis), y_axis, 'go-')
 
         plt.plot(x_coors, y_coors)
@@ -151,3 +147,5 @@ class Quadratic(Polynomial):
     def roots_type(self):
         return self._roots_type.value
 
+
+QUA = Quadratic('5x**2 + 6x + 1')

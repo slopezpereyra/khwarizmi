@@ -112,5 +112,7 @@ class Expression:
         neutral_power = expression.find('**1')
         if neutral_power != -1 and not expression[neutral_power + 1].isdigit():
             expression.replace('**1', '', neutral_power)
+        if expression.endswith('+'):
+            expression = expression[:-1]
 
         return expression

@@ -1,6 +1,12 @@
-# 1 Solve negative square problem on Polynomial evaluation (add parenthesis to negative squared numbers) - - - > DONE
+# 1 Solve negative square problem on Polynomial evaluation (add parenthesis to negative squared numbers) --> DONE
 # 2 Add tests por Polynomial class --> DONE
 # 3 Add tests for TermOperations
 # 4 Add tests for Polynomial Operations
 # 5 Add tests for quadratics -- > DONE
-# 6 From misc.py, fix isanumber() function. It's returning False when dealing with fractions, such as 1/2, since '/' is not a digit.
+# 6 From misc.py, fix isanumber() function. It's returning False when dealing with fractions, such as 1/2, since '/' is not a digit. --> DONE
+
+-----------
+
+# 1 Adapt quadratics test for changes in get_roots () method -it returns a list in every case now.
+# 2 When a polynomial P has more than one term of degree x, a) the function get_terms_by_degree() ignores one of the terms, b) the simplify() function still does not work. --> DONE
+# 3 When two polynomials P Q are added and have same ammount of terms, and have at least one term whose degree doesn't match with a term of the other, a term is left behind on the result. --> DONE
