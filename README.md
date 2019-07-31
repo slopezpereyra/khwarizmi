@@ -2,7 +2,7 @@
 
 A library for efficiently solving algebraic operations.
 
-## Brief intro
+### Brief intro
 
 This library works in a similar way an interpreter does. Its singularity is that what it interprets is a special kind of language: **algebra**.  
 
@@ -10,17 +10,17 @@ The interpretation of algebraic expressions is made through a process of partiti
 
 Despite the richness of the mathematical objects created by Khwarizmi, the algorithms are incredibly unexpensive, and they all eventually come down to the cheap interpretation of a string.
 
-## Current features
+### Current features
 
 Khwarizmi began as an equation solver. Today, apart from solving and graphing equations of degree n = 1 and n = 2, it allows a full interpretation of linear equations, the construction of meaningful polynomials, operations between algebraic terms, and solving and graphing systems of equations.
 
 For a highscool student there's pretty much anything you can't do with Khwarizmi; more complex, university-level features are being developed and will be introduced. Updates can be expected oftenly.
 
-## Requirements
+### Requirements
 
 The only requirement for using the library are having **Python 3.x** and **matplotlib library** installed (the last is installed by default in most GNU/Linux distros).
 
-# Installation
+## Installation
 
 To install the library for Python 3 use pip on your terminal.
 
