@@ -1,6 +1,6 @@
 # khwarizmi
 
-A simple library for efficiently solving basic algebraic expressions.
+A library for efficiently solving algebraic operations.
 
 ## Brief intro
 
