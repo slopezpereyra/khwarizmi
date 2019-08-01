@@ -10,3 +10,19 @@
 # 1 Adapt quadratics test for changes in get_roots () method -it returns a list in every case now.
 # 2 When a polynomial P has more than one term of degree x, a) the function get_terms_by_degree() ignores one of the terms, b) the simplify() function still does not work. --> DONE
 # 3 When two polynomials P Q are added and have same ammount of terms, and have at least one term whose degree doesn't match with a term of the other, a term is left behind on the result. --> DONE
+
+
+print(no_var_terms)
+		print("LHS IS ", self.lhs)
+		print("LOOK ", Expression(self.rhs).get_terms())
+		for term in no_var_terms:
+			print(" * ", term)
+			if term in self.lhs:
+				if term in Expression(self.rhs).get_terms():
+					print("Ignoring")
+					continue
+				print("Performing ", rhs, "-", term)
+				rhs = num(rhs) - num(frac_to_num(term))
+				continue
+			print("Performing ", term, "+", rhs)
+			rhs = num(frac_to_num(term)) + num(rhs)

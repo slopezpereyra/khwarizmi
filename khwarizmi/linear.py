@@ -9,10 +9,12 @@ from exc import (InvalidFormError, LinearSolutionError,
                            RedundantConversionError, UnableToDefineFormError, UnsuitableSlopeInterceptForm, InfinitelySolutionsError)
 from misc import if_assign, num
 
+
 class LinearForms(Enum):
     Standard = "Standard Form"
     SlopeIntercept = "Slope-Intercept"
     PointSlope = "Point-Slope"
+
 
 class Linear(Equation):
     """Base class for all linear equations."""
@@ -29,7 +31,7 @@ class Linear(Equation):
     def get_x_coefficient(self):
         """Returns whatever number is multiplying the x variable on this equation as a string."""
 
-        side = if_assign(self.form is LinearForms.Standard, self.equation, self.sol_side)
+        side = if_assign(self.form is LinearForms.Standard, self.equation, self.rhs)
 
         if side[0] == '-':
             coefficient = if_assign(side[1].isdigit(), self.get_number(1, side), "1")
@@ -87,11 +89,11 @@ class Linear(Equation):
     def get_form(self):
         """ Returns the form of this linear equation."""
 
-        if "x" in self.inc_side and "y" in self.inc_side:
+        if "x" in self.lhs and "y" in self.lhs:
             return LinearForms.Standard
         if self.equation[self.equal_index - 1] == "y":
             return LinearForms.SlopeIntercept
-        if self.inc_side[0] == "y" and self.equation[self.equal_index - 1].isdigit():
+        if self.lhs[0] == "y" and self.equation[self.equal_index - 1].isdigit():
             return LinearForms.PointSlope
 
         raise UnableToDefineFormError(self.equation)
@@ -223,13 +225,13 @@ class SlopeIntercept(Linear):
 
         if self.equation[self.equation.find('x') - 1] == "(":
             raise UnsuitableSlopeInterceptForm(self.equation)
-        if any(char.isdigit() for char in self.inc_side):
+        if any(char.isdigit() for char in self.lhs):
             raise UnsuitableSlopeInterceptForm(self.equation)
 
     def sort_for_x(self):
         """Sorts equation for x."""
 
-        eqtn, sol_side, y_coefficient = self.equation, self.sol_side, self.y_coefficient
+        eqtn, sol_side, y_coefficient = self.equation, self.rhs, self.y_coefficient
         x_index = eqtn.index('x')
 
         # Set the solution side
@@ -244,7 +246,7 @@ class SlopeIntercept(Linear):
     def sort_for_y(self):
         """Sorts equation for y."""
 
-        eqtn, sol_side = self.equation, self.sol_side
+        eqtn, sol_side = self.equation, self.rhs
         x_index = eqtn.index('x')
         operator = if_assign(eqtn[x_index + 1] == '-', '+', '-')
         slope_sign = if_assign(eqtn[0] == '-', '-', '')
@@ -254,7 +256,6 @@ class SlopeIntercept(Linear):
         sol_side = Expression.beautify(sol_side)
 
         return sol_side
-
 
     def sort(self, for_variable):
         """Sorts a  Form linear equation

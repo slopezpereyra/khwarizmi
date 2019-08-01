@@ -4,7 +4,6 @@ from misc import if_assign, num, isanumber
 from exc import NonAlgebraicOperationError, InvalidOperationError
 from expression import Expression
 
-
 class TermOperations:
     """Defines operations between algebraic terms.
     This class is not ment to have instances, but is a placeholder
@@ -17,17 +16,18 @@ class TermOperations:
 
         return True if '**' in a else False
 
-
     @staticmethod
     def getpower(a):
         """Returns exponent of term a."""
 
         if TermOperations.ispowered(a):
             return num(a[a.find('**') + 2:])
+        elif isanumber(a):
+            return 0
         return 1
 
     @staticmethod
-    def isnegative(a):
+    def starts_with_minus(a):
         """True if a is negative, false otherwise."""
 
         if a.count('-') != 0 and a.count('-') % 2 != 0:
@@ -53,8 +53,6 @@ class TermOperations:
         a = Expression(a, no_vars_intended=True)
         b = Expression(b, no_vars_intended=True)
 
-        print(a, b)
-
         if isanumber(a.expression) or isanumber(b.expression):
 
             if non_algebraic is True:
@@ -71,7 +69,7 @@ class TermOperations:
         a_coefficient = a.get_number(0)
         b_coefficient = b.get_number(0)
 
-        result = str(int(a_coefficient) + int(b_coefficient))
+        result = str(num(a_coefficient) + num(b_coefficient))
         result = if_assign(result == '1', "", result)
         result = if_assign(result == '-1', "-", result)
 
@@ -97,14 +95,14 @@ class TermOperations:
             result = a.expression + '-' + b.expression
             return Expression.beautify(result)
 
-        a_coefficient = a.get_number(0)
-        b_coefficient = b.get_number(0)
+        a_coefficient = a.get_number(0, frac_to_number=True)
+        b_coefficient = b.get_number(0, frac_to_number=True)
 
-        result = str(int(a_coefficient) - int(b_coefficient))
+        result = str(num(a_coefficient) - num(b_coefficient))
         result = if_assign(result == '1', "", result)
         result = if_assign(result == '-1', "-", result)
 
-        result += "".join(a.variables) + '**' + TermOperations.getpower(a.expression)
+        result += "".join(a.variables) + '**' + str(TermOperations.getpower(a.expression))
         return Expression.beautify(result)
 
     @staticmethod
@@ -155,10 +153,16 @@ class TermOperations:
         result = if_assign(power != '', '(' + result + ')' + power, result)
         return Expression.beautify(result)
 
-A = "-9z**2"
-B = "3x**5"
-print("TERMS ARE ", A, " ", B)
-print(TermOperations.getpower(A))
-print(TermOperations.multiply(A, B))
+
+A = "-5x"
+B = "4x"
+
+
+#A = "-9z**2"
+#B = "3x**5"
+#print("TERMS ARE ", A, " ", B)
+#print(TermOperations.getpower(A))
+#print(TermOperations.multiply(A, B))
 
 # Find a way to individualize powers, so that we are not talking about the exponents of a whole term, but of the elements of that term.
+

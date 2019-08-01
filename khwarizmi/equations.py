@@ -4,137 +4,72 @@ import copy
 
 from expression import Expression
 from exc import NoEqualityError, NoVariableError
-from misc import num, if_assign, isanumber
+from misc import num, if_assign, isanumber, frac_to_num
+from polynomials import Polynomial
 
 OPERATORS = ["-", "+", "/", "*", '=']
 excused_symbols = ["/", "."]
 
 
 class Equation(Expression):
-	"""Base class for all expressions of the form a = b."""
+	"""Base class for all expressions of the form a = b of one variable"""
 
 	def __init__(self, equation):
 
 		Expression.__init__(self, equation)
 		self.equation = self.expression
+		self.var = self.variables[0]
 		self.equal_index = self.equation.find("=")
-		self.sol_side = ""
-		self.inc_side = ""
+		self.lhs = ""
+		self.rhs = ""
 		self.get_sides()
-		self.unknown_index = self.equation.index(self.unknown)
-		self.coefficient_length = 0
-		self.coefficient = self.get_coefficient()
 
 	def __str__(self):
 		"""String representation of the equation."""
 
 		return self.equation
 
-	def get_unknown(self):
-		"""Returns the unknown of the equation; this is, any
-		character of the equation string that is not a number and rather
-		a letter. E.g. the letter x or y."""
-
-		for character in self.expression:
-			if character.isalpha() is True:
-				return character
-
-		raise NoVariableError(self.expression)
-
 	def get_sides(self):
-		"""Assigns to the inc_side and the sol_side attributes sliced
-		parts of the equation; the part the unknown is in, and the part the result
+		"""Assigns to the inc_side and the sol_side attributes their correspondent
+		parts of the equation; the part the variable is in, and the part the result
 		is in. The equation is sliced to the left and to the right of the equal sign.
 		"""
 
 		try:
 			equal_sign = self.equation.index("=")
-			self.inc_side = self.equation[0:equal_sign]
-			self.sol_side = self.equation[equal_sign + 1:]
+			self.lhs = self.equation[0:equal_sign]
+			self.rhs = self.equation[equal_sign + 1:]
 
 		except ValueError:
 			raise NoEqualityError(self.equation)
 
-	def simplify_equation(self):
-		"""Simplifies the equation by evaluating all coefficients of the equation to one single
-		coefficient."""
+	def solve(self, debug=False):
+		"""Returns the solution of the equation as integer or float, depending on what
+		the solution is."""
 
-		sol_side, counter, left_hand_terms = self.sol_side, 0, self.get_terms(self.inc_side)
+		rhs_no_var_terms = [num(term) for term in Expression(self.rhs, no_vars_intended=True).get_terms() if isanumber(term)]
+		lhs_no_var_terms = [num(term) for term in Expression(self.lhs, no_vars_intended=True).get_terms() if isanumber(term)]
 
-		unknowns = self.get_coefficients()
-		# For each number in unknowns, check if its found on the solution side;
-		# if it is, pass it to the equation side with opposite sign.
-		for number in unknowns:
-			index = sol_side.find(number + self.unknown)
+		rhs_var_terms = [term for term in Expression(self.rhs, no_vars_intended=True).get_terms() if any(var in term for var in self.variables)]
+		lhs_var_terms = [term for term in Expression(self.lhs, no_vars_intended=True).get_terms() if any(var in term for var in self.variables)]
 
-			if index == -1:
-				counter += 1
-				continue
+		polynomial = '+'.join(lhs_var_terms) + '-' + '+'.join(rhs_var_terms)
+		polynomial = if_assign(polynomial.endswith('-'), polynomial[:-1], polynomial)
 
-			replacement = if_assign(sol_side[index - 1] in OPERATORS, sol_side[index - 1] + number, number)
-			sol_side = sol_side.replace(replacement + self.unknown, '')
-			# If this number is on the solution side
-			if number + self.unknown in self.sol_side:
-				unknowns[counter] = if_assign(unknowns[counter].startswith('-'), number.replace('-', ''), '-' + number)
+		lhs = Polynomial(polynomial)
+		coefficient = self.get_number(0, lhs.polynomial)
+		result = sum(rhs_no_var_terms) - sum(lhs_no_var_terms)
 
-			counter += 1
+		if debug:
+			print(lhs, '=', result, '-->', str(result) + '/(' + coefficient + ')')
 
-		for term in left_hand_terms:
-			if self.unknown not in term:
-				sol_side += '-' + term
+		if coefficient is '0':
+			if result == 0:
+				return "All real numbers are solutions."
+			return "No solutions."
 
-		try:
-			unknowns = list(map(num, unknowns))
-			unknown = str(sum(unknowns))
-		except ValueError:
-			unknown = ''
-
-		simplified = self.beautify(unknown + self.unknown + '=' + sol_side)
-		return simplified
-
-	def get_coefficient(self):
-		"""Returns this equation's coefficient."""
-
-		equation = self.simplify_equation()
-		return self.get_number(0, equation)
-
-	def sort(self, show=False):
-		"""Sorts the equation, which is a very highschool, wrongly phrased
-		way of saying that clears the unknown side by substracting all
-		positive numbers, adding all negative numbers, dividing all multipliers
-		and multiplying all divisors, doing the same operations on the solution
-		side. """
-
-		index = 0
-
-		# Local variables for the local, simplified version of the equation
-		# (not equal to self.equation).
-
-		equation = self.simplify_equation()
-		equal_sign = equation.index("=")
-		inc_side, sol_side = equation[0:equal_sign], equation[equal_sign + 1:]
-		symbol = self.coefficient
-
-		if not isanumber(symbol):
-			symbol = if_assign(equation[0] == '-', '-1', '1')
-
-		inc_side = inc_side.replace(symbol, "", 1)
-		sol_side = '(' + sol_side + ')/' + symbol
-
-		if show is True:
-
-			string = """Equation \n{}\n\nSimplified\n{}\n\nSorted\n{}\n\nSolved \n{}""".format(
-				self.equation, equation, inc_side + '=' + sol_side,
-				self.unknown + '=' + str(num(eval(sol_side))) + '\n')
-
-			print(string)
-
-		return sol_side
-
-	def solve(self, show=False):
-		"""Evaluates the algebraic expression.
-		If show is True, displays a step by step explanation."""
-
-		return num(eval(self.sort(show=show)))
+		return num(str((eval(str(result) + '/(' + coefficient + ')'))))
 
 
+EQ = Equation("-3x = -6 * 5")
+print(EQ.solve(True))

@@ -16,9 +16,11 @@ class RootTypes(Enum):
 
 
 class Quadratic(Polynomial):
+    """Base class for all polynomials of degree n = 2."""
 
     def __init__(self, polynomial):
         Polynomial.__init__(self, polynomial)
+        print("EXPRESSION LEFT AS ", self.polynomial)
         self._complete()
         self.discriminant = self.get_discriminant()
         self._roots_type = self.get_roots_type()
@@ -50,6 +52,7 @@ class Quadratic(Polynomial):
     def getabc(self):
         """Returns values of a, b and c coefficients from standard quadratic form,
         ax**2 + bx + c"""
+
         return self.get_number(0, self.terms[0]), self.get_number(0, self.terms[1]), self.terms[2]
 
     def get_discriminant(self):
@@ -106,11 +109,10 @@ class Quadratic(Polynomial):
         bhask = self.bhaskarize().replace('½', '0.5')
 
         if self._roots_type == RootTypes.IdenticRealRoots:
-            return [num(eval(bhask.replace('+/-', '+')))]
+            print(bhask)
+            return [num(str(eval(bhask.replace('+/-', '+'))))]
 
-        roots = []
-        roots.append(eval(bhask.replace('+/-', '+')))
-        roots.append(eval(bhask.replace('+/-', '-')))
+        roots = [eval(bhask.replace('+/-', '+')), eval(bhask.replace('+/-', '-'))]
 
         return roots
 
@@ -120,10 +122,10 @@ class Quadratic(Polynomial):
 
         a, b, c = self.getabc()
 
-        x = eval('-' + b + '/(2*'+ a + ')')
+        x = eval('-' + b + '/(2*' + a + ')')
         y = self.evaluate(x)
 
-        return (num(x), num(y))
+        return num(str(x)), num(str(y))
 
     def graph (self, domain_range, axis_range=15):
         """Graphs this quadratic from x1 = -domain_range
@@ -148,4 +150,4 @@ class Quadratic(Polynomial):
         return self._roots_type.value
 
 
-QUA = Quadratic('5x**2 + 6x + 1')
+QUA = Quadratic('3x**2')

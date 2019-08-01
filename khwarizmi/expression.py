@@ -1,6 +1,6 @@
 """Basic expressions"""
 
-from misc import if_assign, isanumber
+from misc import if_assign, isanumber, frac_to_num
 from exc import NoVariableError
 import copy
 
@@ -14,14 +14,17 @@ class Expression:
     def __init__(self, expression, no_vars_intended=False):
         self.no_vars_intended = no_vars_intended
         self.expression = expression.replace(' ', '')
+        print(self.expression)
         self.variables = self.get_variables()
         self.unknown = self.variables[0] if len(self.variables) > 0 else None
         self.terms = self.get_terms()
         self.coefficients = self.get_coefficients()
 
+    def __str__(self):
+        return self.expression
+
     def get_variables(self):
-        """Adds every variable of the equation
-        to the variables attribute (list)."""
+        """Returns a list of all variables on the expression."""
 
         index, incs = 0, []
         for symbol in self.expression:
@@ -34,14 +37,16 @@ class Expression:
 
         return incs
 
-    def get_number(self, index, expression=None, catch_variable=False, catch_term=False):
-        """Returns the number that starts at index on expression.
-        It may or may not catch full terms and variables."""
+    def get_number(self, index, expression=None, catch_variable=False, catch_term=False, frac_to_number=False):
+        """Given an expression (str) returns the number that starts at index.
+        It may or may not catch full terms and variables. If no expression is given
+        then self.expression is imparted by default."""
 
         expression = self.expression if expression is None else expression
         separators = copy.copy(SEPARATORS)
-        is_negative = False
+        starts_with_minus = False
 
+        # Profilactic measure
         if catch_term is True and catch_variable is False:
             catch_variable = True
 
@@ -52,10 +57,11 @@ class Expression:
 
         expression = expression[index:]
         if expression.startswith('-'):
-            is_negative = True
+            starts_with_minus = True
             expression = expression[1:]
 
         if any(x in separators for x in expression):
+            # If there actually are any separators on the expression...
             separator = next((x for x in expression if x in separators))
             pos = expression.find(separator)
             if expression[0:pos] is "" and isanumber(expression[0:pos+1]):
@@ -65,13 +71,17 @@ class Expression:
         else:
             number = expression
 
-        if expression[0].isalpha() and number == '':
-            return '1' if is_negative is False else '-1'
+        if frac_to_number:
+            number = frac_to_num(number)
 
-        return number if is_negative is False else '-' + number
+        if expression[0].isalpha() and number == '':
+            return '1' if starts_with_minus is False else '-1'
+
+        return number if starts_with_minus is False else '-' + number
 
     def get_terms(self, side=None):
-        """Returns a list of all terms of this equation."""
+        """Returns a list of all terms of an expression.
+        self.equation is imparted by default."""
 
         side = self.expression if side is None else side
         index, terms = 0, []
@@ -100,7 +110,7 @@ class Expression:
     @staticmethod
     def beautify(expression):
         """Beautifies a mathematical expression, turning '--' into '+',
-            '+*' into '*', etc."""
+            '+*' into '*', etc., increasing or even allowing any readibility."""
 
         expression = expression.replace('--', '+')
         expression = expression.replace('*+', '*')
@@ -116,3 +126,4 @@ class Expression:
             expression = expression[:-1]
 
         return expression
+

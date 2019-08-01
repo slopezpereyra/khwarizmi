@@ -25,7 +25,7 @@ class QuadraticTest(unittest.TestCase):
 
     def test_roots(self):
         self.assertEqual(self.first_quadratic.roots, ['(-3 +/- i(31**½)) / 4'])
-        self.assertEqual(self.sec_quadratic.roots, 0)
+        self.assertEqual(self.sec_quadratic.roots, [0])
         self.assertEqual(self.third_quadratic.roots, [-1, 0.5])
 
     def test_vertex(self):

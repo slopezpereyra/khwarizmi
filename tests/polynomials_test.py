@@ -2,7 +2,7 @@ import unittest
 import sys
 import os
 sys.path.append(os.path.abspath('../khwarizmi'))
-from polynomials import Polynomial
+from polynomials import Polynomial, PolynomialOperation
 
 # 0.001 sec
 
@@ -12,6 +12,7 @@ class PolynomialsTest(unittest.TestCase):
         self.a_polynomial = Polynomial("2x**4 + 4x**3 - 5x**2 - 9")
         self.b_polynomial = Polynomial("2a**2 + 4a**4 - 2")
         self.c_polynomial = Polynomial("1/2z**4 - 1/2")
+        self.d_polynomial = Polynomial("4x**5 + x**4 - 2x**3 + 3")
 
     def test_polynomial_expression(self):
         self.assertEqual(self.a_polynomial.polynomial, '2x**4+4x**3-5x**2-9')
@@ -51,6 +52,15 @@ class PolynomialsTest(unittest.TestCase):
         self.assertEqual(self.a_polynomial.primary_coefficient, '2')
         self.assertEqual(self.b_polynomial.primary_coefficient, '4')
         self.assertEqual(self.c_polynomial.primary_coefficient, '1/2')
+
+    def test_polynomial_addition(self):
+        p, q = self.a_polynomial, self.d_polynomial
+        self.assertEqual(PolynomialOperation.addition(p, q).__str__(), "4x**5+3x**4+2x**3-5x**2-6")
+
+    def test_polynomial_multiplication(self):
+        p, q = self.a_polynomial, self.b_polynomial
+        print(isinstance(p, Polynomial), isinstance(q, Polynomial))
+        self.assertEqual(PolynomialOperation.product(p, q).__str__(), "8x**9+18x**8-20x**7-13x**6-26x**5-3x**4+30x**3-15x**2-27")
 
 
 
