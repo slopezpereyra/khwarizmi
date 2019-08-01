@@ -7,6 +7,7 @@ from exc import InfinitelySolutionsError
 
 # 0.004 sec
 
+
 class LinearSystemTest(unittest.TestCase):
 
     def setUp(self):

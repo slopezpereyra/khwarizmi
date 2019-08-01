@@ -69,7 +69,3 @@ class Equation(Expression):
 			return "No solutions."
 
 		return num(str((eval(str(result) + '/(' + coefficient + ')'))))
-
-
-EQ = Equation("-3x = -6 * 5")
-print(EQ.solve(True))

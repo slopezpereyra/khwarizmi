@@ -112,9 +112,6 @@ class TermOperations:
         a = Expression(a, no_vars_intended=True)
         b = Expression(b, no_vars_intended=True)
 
-        print("P of A : ", TermOperations.getpower(a.expression))
-        print("P of B : ", TermOperations.getpower(b.expression))
-
         power = str(if_assign(TermOperations.getpower(a.expression) >= TermOperations.getpower(b.expression), TermOperations.getpower(a.expression), TermOperations.getpower(b.expression)))
         variables = set(a.variables + b.variables)
 
@@ -128,8 +125,6 @@ class TermOperations:
 
         a_coefficient = a.get_number(0)
         b_coefficient = b.get_number(0)
-
-        print("POWER IS ,", power)
 
         result = str(int(a_coefficient) * int(b_coefficient)) + "".join(variables) + '**' + power
         return Expression.beautify(result)
@@ -153,16 +148,6 @@ class TermOperations:
         result = if_assign(power != '', '(' + result + ')' + power, result)
         return Expression.beautify(result)
 
-
-A = "-5x"
-B = "4x"
-
-
-#A = "-9z**2"
-#B = "3x**5"
-#print("TERMS ARE ", A, " ", B)
-#print(TermOperations.getpower(A))
-#print(TermOperations.multiply(A, B))
 
 # Find a way to individualize powers, so that we are not talking about the exponents of a whole term, but of the elements of that term.
 

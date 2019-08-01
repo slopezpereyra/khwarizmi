@@ -20,7 +20,6 @@ class Quadratic(Polynomial):
 
     def __init__(self, polynomial):
         Polynomial.__init__(self, polynomial)
-        print("EXPRESSION LEFT AS ", self.polynomial)
         self._complete()
         self.discriminant = self.get_discriminant()
         self._roots_type = self.get_roots_type()
@@ -109,7 +108,6 @@ class Quadratic(Polynomial):
         bhask = self.bhaskarize().replace('½', '0.5')
 
         if self._roots_type == RootTypes.IdenticRealRoots:
-            print(bhask)
             return [num(str(eval(bhask.replace('+/-', '+'))))]
 
         roots = [eval(bhask.replace('+/-', '+')), eval(bhask.replace('+/-', '-'))]

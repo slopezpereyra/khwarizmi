@@ -59,7 +59,6 @@ class PolynomialsTest(unittest.TestCase):
 
     def test_polynomial_multiplication(self):
         p, q = self.a_polynomial, self.b_polynomial
-        print(isinstance(p, Polynomial), isinstance(q, Polynomial))
         self.assertEqual(PolynomialOperation.product(p, q).__str__(), "8x**9+18x**8-20x**7-13x**6-26x**5-3x**4+30x**3-15x**2-27")
 
 

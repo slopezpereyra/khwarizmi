@@ -138,7 +138,3 @@ class PolynomialOperation:
 		result = '+'.join(result)
 		return Polynomial(Expression.beautify(result), name)
 
-print("Over here")
-print(TermOperations.getpower("2"))
-POL = Polynomial("2x**2 + 5x**2 + 3x - 2")
-print(POL)

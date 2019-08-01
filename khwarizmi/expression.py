@@ -14,7 +14,6 @@ class Expression:
     def __init__(self, expression, no_vars_intended=False):
         self.no_vars_intended = no_vars_intended
         self.expression = expression.replace(' ', '')
-        print(self.expression)
         self.variables = self.get_variables()
         self.unknown = self.variables[0] if len(self.variables) > 0 else None
         self.terms = self.get_terms()
