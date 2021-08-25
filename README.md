@@ -14,8 +14,6 @@ Despite the richness of the mathematical objects created by Khwarizmi, the algor
 
 Khwarizmi began as an equation solver. Today, apart from solving and graphing equations of degree n = 1 and n = 2, it allows a full interpretation of linear equations, the construction of meaningful polynomials, operations between algebraic terms, and solving and graphing systems of equations.
 
-For a highscool student there's pretty much anything you can't do with Khwarizmi; more complex, university-level features are being developed and will be introduced. Updates can be expected oftenly.
-
 ### Requirements
 
 The only requirement for using the library are having **Python 3.x** and **matplotlib library** installed (the last is installed by default in most GNU/Linux distros).
