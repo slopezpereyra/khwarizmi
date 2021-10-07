@@ -2,7 +2,7 @@
 
 A library for efficiently solving algebraic operations.
 
-### Brief intro
+### Presentation
 
 This library works in a similar way an interpreter does. Its singularity is that what it interprets is a special kind of language: **algebra**.  
 
